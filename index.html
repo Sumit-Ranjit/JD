@@ -30,8 +30,17 @@
 
     // Load the credentials JSON
     fetch('credentials.json')
-      .then(response => response.json())
-      .then(data => credentials = data);
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to load credentials.json');
+    }
+    return response.json();
+  })
+  .then(data => credentials = data)
+  .catch(error => {
+    console.error('Error loading JSON:', error);
+    alert('Error: Unable to load user data.');
+  });
 
     // Handle form submission
     document.getElementById('login-form').addEventListener('submit', function(e) {
