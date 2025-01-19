@@ -2,7 +2,7 @@
 fetch('Data.json')
   .then(response => {
     if (!response.ok) {
-      throw new Error('Failed to load JSON file');
+      throw new Error('Failed to load Data JSON file');
     }
     return response.json(); // Parse the JSON data
   })
