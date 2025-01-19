@@ -1,5 +1,5 @@
 // Fetch the JSON file
-fetch('data.json')
+fetch('Data.json')
   .then(response => {
     if (!response.ok) {
       throw new Error('Failed to load JSON file');
