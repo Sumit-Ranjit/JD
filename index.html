@@ -3,55 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Page</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    form { max-width: 300px; margin: auto; }
-    input { display: block; margin: 10px auto; padding: 10px; width: 100%; }
-    button { padding: 10px 20px; }
-    #content { display: none; }
-  </style>
+  <title>Login</title>
 </head>
 <body>
-  <h1>Login to Access the Page</h1>
-  <form id="login-form">
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
+  <h1>Login</h1>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Enter username" required>
+    <input type="password" id="password" placeholder="Enter password" required>
     <button type="submit">Login</button>
   </form>
-
-  <div id="content">
-    <h2>Welcome to the Protected Content!</h2>
-    <p>You have successfully logged in.</p>
-  </div>
+  <p id="message"></p>
 
   <script>
-    let credentials;
+    async function fetchUsers() {
+      // Fetch the users.json file from GitHub Pages
+      const response = await fetch('credentials.json'); // Adjust path if needed
+      return response.json();
+    }
 
-    // Load the credentials JSON
-    fetch('credentials.json')
-      .then(response => response.json())
-      .then(data => credentials = data);
-
-    // Handle form submission
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-
+    document.getElementById('loginForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
-      // Validate credentials
-      const user = credentials.find(user => user.Username === username && user.Password === password);
+      try {
+        const users = await fetchUsers();
+        const user = users.find(u => u.username === username && u.password === password);
 
-      if (user) {
-        alert('Login successful!');
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-      } else {
-        alert('Invalid username or password. Please try again.');
+        if (user) {
+          document.getElementById('message').textContent = 'Login successful!';
+          // Redirect or show additional content for authenticated users
+          window.location.href = 'dashboard.html';
+        } else {
+          document.getElementById('message').textContent = 'Invalid username or password.';
+        }
+      } catch (error) {
+        document.getElementById('message').textContent = 'Error fetching user data.';
+        console.error(error);
       }
     });
   </script>
+
   <h1>Welcome</h1>
   <p>Click the button below to view the first record:</p>
   <a href="record.html">
