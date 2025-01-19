@@ -20,8 +20,7 @@ fetch('Data.json')
       <p><strong>Hotel:</strong> ${firstRecord.Hotel}</p>
       <p><strong>City:</strong> ${firstRecord.City}</p>
       <p><strong>State:</strong> ${firstRecord.State}</p>
-      <p><strong>Requirement Mentioned:</strong> ${firstRecord.Requirement Mentioned}</p>
-      <p><strong>Search Time:</strong> ${firstRecord.Search Time}</p>
+      
     `;
   })
   .catch(error => {
