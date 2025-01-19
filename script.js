@@ -14,8 +14,14 @@ fetch('Data.json')
     const recordDiv = document.getElementById('record');
     recordDiv.innerHTML = `
       <p><strong>Mobile Number:</strong> ${firstRecord.Mobile_Number}</p>
-      <p><strong>Name:</strong> ${firstRecord.name}</p>
-      <p><strong>Email:</strong> ${firstRecord.email}</p>
+      <p><strong>Name:</strong> ${firstRecord.Name}</p>
+      <p><strong>Email:</strong> ${firstRecord.Email}</p>
+      <p><strong>Area:</strong> ${firstRecord.Area}</p>
+      <p><strong>Hotel:</strong> ${firstRecord.Hotel}</p>
+      <p><strong>City:</strong> ${firstRecord.City}</p>
+      <p><strong>State:</strong> ${firstRecord.State}</p>
+      <p><strong>Requirement Mentioned:</strong> ${firstRecord.Requirement Mentioned}</p>
+      <p><strong>Search Time:</strong> ${firstRecord.Search Time}</p>
     `;
   })
   .catch(error => {
