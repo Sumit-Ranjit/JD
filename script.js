@@ -6,14 +6,14 @@ fetch('Data.json')
     }
     return response.json(); // Parse the JSON data
   })
-  .then(data => {
+  .then(Data => {
     // Access the first record
-    const firstRecord = data[0];
+    const firstRecord = Data[0];
 
     // Display the record
     const recordDiv = document.getElementById('record');
     recordDiv.innerHTML = `
-      <p><strong>ID:</strong> ${firstRecord.id}</p>
+      <p><strong>Mobile Number:</strong> ${firstRecord.Mobile_Number}</p>
       <p><strong>Name:</strong> ${firstRecord.name}</p>
       <p><strong>Email:</strong> ${firstRecord.email}</p>
     `;
