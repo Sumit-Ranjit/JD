@@ -16,10 +16,21 @@
 
   <script>
     async function fetchUsers() {
-      // Fetch the users.json file from GitHub Pages
-      const response = await fetch('/credentials.json'); // Adjust path if needed
-      return response.json();
+  try {
+    const response = await fetch('/credentials.json'); // Adjust path as needed
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+    const data = await response.json();
+    console.log('Fetched credentials:', data); // Debug log
+    return data;
+  } catch (error) {
+    console.error('Error fetching credentials.json:', error.message);
+    document.getElementById('message').textContent = 'Error fetching user data.';
+    return null;
+  }
+}
+
 
     document.getElementById('loginForm').addEventListener('submit', async (event) => {
       event.preventDefault();
