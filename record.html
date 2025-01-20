@@ -3,167 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Interaction Page</title>
+  <title>JSON Data Editor</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .details-box {
-      border: 1px solid #ccc;
-      padding: 20px;
-      margin-bottom: 20px;
     }
     table {
-      width: 100%;
       border-collapse: collapse;
+      width: 100%;
       margin-bottom: 20px;
     }
     table, th, td {
-      border: 1px solid #ccc;
+      border: 1px solid black;
     }
     th, td {
-      padding: 10px;
+      padding: 8px;
       text-align: left;
     }
-    .form-group {
-      margin-bottom: 15px;
+    th {
+      background-color: #f2f2f2;
     }
-    .form-group label {
-      display: block;
-      font-weight: bold;
-    }
-    .form-group input, .form-group select, .form-group textarea {
+    input, select, textarea {
       width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      padding: 5px;
+      box-sizing: border-box;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>User Details</h1>
-    <div id="user-details" class="details-box">
-      <!-- User details will be dynamically inserted here -->
-    </div>
-    <h2>Update Details</h2>
-    <form id="update-form">
-      <div class="form-group">
-        <label for="call-connected">Call Connected</label>
-        <select id="call-connected" name="call_connected">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="intent-of-call">Intent of Call</label>
-        <select id="intent-of-call" name="intent_of_call">
-          <option value="sales">Sales</option>
-          <option value="service">Service</option>
-          <option value="enquiry">Enquiry</option>
-          <option value="other">Other</option>
-        </select>
-        <textarea id="remarks" name="remarks" placeholder="Remarks (if Other)" style="display:none;"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="booking-id">Booking ID</label>
-        <input type="text" id="booking-id" name="booking_id">
-      </div>
-      <div class="form-group">
-        <label for="check-in-date">Check-In Date</label>
-        <input type="date" id="check-in-date" name="check_in_date">
-      </div>
-      <div class="form-group">
-        <label for="check-out-date">Check-Out Date</label>
-        <input type="date" id="check-out-date" name="check_out_date">
-      </div>
-      <div class="form-group">
-        <label for="num-rooms">Number of Rooms</label>
-        <input type="number" id="num-rooms" name="num_rooms">
-      </div>
-      <div class="form-group">
-        <label for="booking-created">Booking Created</label>
-        <select id="booking-created" name="booking_created">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="reason-not-booking">Reason for Not Booking</label>
-        <textarea id="reason-not-booking" name="reason_not_booking"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="prepay-pitched">Prepay Pitched</label>
-        <select id="prepay-pitched" name="prepay_pitched">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="prepay-collected">Prepay Collected</label>
-        <select id="prepay-collected" name="prepay_collected">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="reason-non-prepay">Reason for Non Prepay</label>
-        <textarea id="reason-non-prepay" name="reason_non_prepay"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="agent-remarks">Agent Remarks</label>
-        <textarea id="agent-remarks" name="agent_remarks"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="status">Status</label>
-        <select id="status" name="status">
-          <option value="done">Done</option>
-        </select>
-      </div>
-      <button type="submit">Update</button>
-    </form>
-  </div>
+  <h1>Data Entry</h1>
+
+  <form id="data-form">
+    <table>
+      <thead>
+        <tr>
+          <th>Area</th>
+          <th>Hotel</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Requirement Mentioned</th>
+          <th>Search Time</th>
+          <th>Call Back Time</th>
+          <th>Call Back Agent</th>
+          <th>Intent of Call</th>
+          <th>Remarks if Others</th>
+          <th>Booking ID</th>
+          <th>Check-in Date</th>
+          <th>Check-out Date</th>
+          <th>No. of Rooms</th>
+          <th>Booking Created</th>
+          <th>Reason of Non-Booking</th>
+          <th>Prepay Pitched</th>
+          <th>Prepay Collected</th>
+          <th>Reason of Non-Prepay</th>
+          <th>Agent Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="data-table">
+        <!-- Data will be dynamically populated here -->
+      </tbody>
+    </table>
+    <button type="button" id="save-button">Save</button>
+  </form>
 
   <script>
- // Fetch the JSON file
-fetch('Data.json')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Failed to load Data JSON file');
+    const jsonFilePath = 'Data.json'; // Path to the JSON file
+    const writeFilePath = 'Write-Record.json'; // Path to the write file
+    const tableBody = document.getElementById('data-table');
+
+    // Fetch JSON data and populate table
+    fetch(jsonFilePath)
+      .then(response => response.json())
+      .then(data => {
+        const mobileGroups = groupByMobileNumber(data);
+
+        mobileGroups.forEach(records => {
+          records.forEach((record, index) => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+              <td>${record.Area}</td>
+              <td>${record.Hotel}</td>
+              <td>${record.City}</td>
+              <td>${record.State}</td>
+              <td>${record["Requirement Mentioned"]}</td>
+              <td>${formatDate(record["Search Time"])}</td>
+              <td>${getISTCurrentTime()}</td>
+              <td>LoggedUser</td>
+              <td>
+                <select name="intent">
+                  <option value="Sales">Sales</option>
+                  <option value="Service">Service</option>
+                  <option value="Enquiry">Enquiry</option>
+                  <option value="Others">Others</option>
+                </select>
+              </td>
+              <td><input type="text" name="remarks" ${record["Intent of call "] !== "Others" ? "readonly" : ""}></td>
+              <td><input type="text" name="booking_id"></td>
+              <td><input type="date" name="check_in_date"></td>
+              <td><input type="date" name="check_out_date"></td>
+              <td><input type="number" name="rooms"></td>
+              <td>
+                <select name="booking_created">
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td><input type="text" name="reason_non_booking"></td>
+              <td>
+                <select name="prepay_pitched">
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td>
+                <select name="prepay_collected">
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </td>
+              <td><input type="text" name="reason_non_prepay"></td>
+              <td><textarea name="agent_remarks"></textarea></td>
+            `;
+
+            tableBody.appendChild(row);
+          });
+        });
+      })
+      .catch(error => console.error('Error fetching JSON data:', error));
+
+    // Group records by mobile number
+    function groupByMobileNumber(data) {
+      const grouped = {};
+      data.forEach(item => {
+        if (!grouped[item.Mobile_Number]) {
+          grouped[item.Mobile_Number] = [];
+        }
+        grouped[item.Mobile_Number].push(item);
+      });
+      return Object.values(grouped);
     }
-    return response.json(); // Parse the JSON data
-  })
-  .then(Data => {
-    // Access the first record
-    const firstRecord = Data[0];
 
-    // Display the record
-    const recordDiv = document.getElementById('record');
-    recordDiv.innerHTML = `
-      <p><strong>Mobile Number:</strong> ${firstRecord.Mobile_Number}</p>
-      <p><strong>Name:</strong> ${firstRecord.Name}</p>
-      <p><strong>Email:</strong> ${firstRecord.Email}</p>
-      <p><strong>Area:</strong> ${firstRecord.Area}</p>
-      <p><strong>Hotel:</strong> ${firstRecord.Hotel}</p>
-      <p><strong>City:</strong> ${firstRecord.City}</p>
-      <p><strong>State:</strong> ${firstRecord.State}</p>
-      <p><strong>Requirement Mentioned:</strong> ${firstRecord.Requirement_Mentioned}</p>
-      <p><strong>Search Time:</strong> ${firstRecord.Search_Time || "Not available"}</p>
-    `;
-    document.getElementById("user-details").innerHTML = userDetails;
+    // Format Excel datetime to dd/mm/yyyy hh:mm:ss
+    function formatDate(excelDate) {
+      const date = new Date((excelDate - 25569) * 86400 * 1000);
+      return date.toLocaleString('en-IN');
+    }
 
-    // Show/Hide Remarks based on Intent of Call
-    document.getElementById("intent-of-call").addEventListener("change", function () {
-      const remarks = document.getElementById("remarks");
-      remarks.style.display = this.value === "other" ? "block" : "none";
-    });
+    // Get current time in IST
+    function getISTCurrentTime() {
+      const now = new Date();
+      const offset = 5.5 * 60 * 60 * 1000; // IST offset
+      const istTime = new Date(now.getTime() + offset);
+      return istTime.toLocaleString('en-IN');
+    }
   </script>
 </body>
 </html>
