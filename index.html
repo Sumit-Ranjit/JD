@@ -43,6 +43,7 @@
 
         if (user) {
           document.getElementById('message').textContent = 'Login successful!';
+          localStorage.setItem('loggedInUser', username);
           // Redirect or show additional content for authenticated users
           window.location.href = 'record.html';
         } else {
