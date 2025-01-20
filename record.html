@@ -54,7 +54,7 @@
         fetch(dataFilePath)
           .then(response => response.json())
           .then(data => {
-            const mobileNumber = '9082175513'; // Example Mobile Number (you can make this dynamic)
+            const mobileNumber = ${record.Mobile_Number}; // Example Mobile Number (you can make this dynamic)
             const filteredData = data.filter(record => record.Mobile_Number === mobileNumber);
 
             if (filteredData.length > 0) {
