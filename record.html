@@ -12,7 +12,7 @@
     table {
       border-collapse: collapse;
       width: 100%;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
     table, th, td {
       border: 1px solid black;
@@ -24,13 +24,17 @@
     th {
       background-color: #f2f2f2;
     }
-    input, select, textarea, button {
-      margin: 10px 0;
-      padding: 5px;
-      box-sizing: border-box;
+    .section {
+      margin-bottom: 40px;
     }
-    #write-section {
-      margin-top: 40px;
+    .section h2 {
+      margin-bottom: 10px;
+    }
+    .info-box {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
     }
   </style>
   <script>
@@ -44,15 +48,21 @@
 
       const dataFilePath = 'Data.json'; // JSON file path
       const readSection = document.getElementById('read-section');
-      const writeSection = document.getElementById('write-section');
-      const downloadLink = document.getElementById('download-link');
 
-      // Function to fetch data and populate the read table
+      // Function to fetch data and populate the read section
       function fetchData() {
         fetch(dataFilePath)
           .then(response => response.json())
           .then(data => {
-            populateReadTable(data);
+            const mobileNumber = '9082175513'; // Example Mobile Number (you can make this dynamic)
+            const filteredData = data.filter(record => record.Mobile_Number === mobileNumber);
+
+            if (filteredData.length > 0) {
+              populateInfoSection(filteredData[0]);
+              populateTableSection(filteredData);
+            } else {
+              readSection.innerHTML = '<p>No records found for the given mobile number.</p>';
+            }
           })
           .catch(error => {
             console.error('Error fetching data:', error);
@@ -60,26 +70,33 @@
           });
       }
 
-      // Populate the read table
-      function populateReadTable(data) {
-        const readTableBody = document.getElementById('read-table-body');
-        readTableBody.innerHTML = '';
+      // Populate the info section
+      function populateInfoSection(record) {
+        document.getElementById('info-box').innerHTML = `
+          <p><strong>Mobile Number:</strong> ${record.Mobile_Number}</p>
+          <p><strong>Name:</strong> ${record.Name}</p>
+          <p><strong>Email:</strong> ${record.Email}</p>
+        `;
+      }
+
+      // Populate the table section
+      function populateTableSection(data) {
+        const tableBody = document.getElementById('read-table-body');
+        tableBody.innerHTML = '';
 
         data.forEach(record => {
           const row = document.createElement('tr');
           row.innerHTML = `
             <td>${record['Sr No']}</td>
             <td>${formatDate(record['Time_of_Entry'])}</td>
-            <td>${record['Mobile_Number']}</td>
-            <td>${record['Name']}</td>
-            <td>${record['Email']}</td>
-            <td>${record['Area']}</td>
             <td>${record['Hotel']}</td>
+            <td>${record['Area']}</td>
             <td>${record['City']}</td>
             <td>${record['State']}</td>
+            <td>${record['Requirement Mentioned']}</td>
             <td>${formatDate(record['Search Time'])}</td>
           `;
-          readTableBody.appendChild(row);
+          tableBody.appendChild(row);
         });
       }
 
@@ -88,29 +105,6 @@
         const date = new Date((excelDate - 25569) * 86400 * 1000);
         return date.toLocaleString('en-IN');
       }
-
-      // Save data to Write-Record.json by downloading it
-      document.getElementById('save-button').addEventListener('click', () => {
-        const updatedRecord = {
-          'Area': document.getElementById('area').value,
-          'Hotel': document.getElementById('hotel').value,
-          'City': document.getElementById('city').value,
-          'State': document.getElementById('state').value,
-          'Check-in Date': document.getElementById('check-in').value,
-          'Check-out Date': document.getElementById('check-out').value,
-          'Agent Remarks': document.getElementById('remarks').value,
-        };
-
-        const blob = new Blob([JSON.stringify([updatedRecord], null, 2)], {
-          type: 'application/json',
-        });
-
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = 'Write-Record.json';
-        downloadLink.click();
-
-        alert('Data saved successfully!');
-      });
 
       // Fetch and display data
       fetchData();
@@ -121,41 +115,32 @@
   <h1>Record Management</h1>
 
   <!-- Read Section -->
-  <div id="read-section">
+  <div id="read-section" class="section">
     <h2>Read Section</h2>
+
+    <!-- Info Section -->
+    <div id="info-box" class="info-box">
+      <!-- Mobile Number, Name, and Email will be populated here -->
+    </div>
+
+    <!-- Table Section -->
     <table>
       <thead>
         <tr>
           <th>Sr No</th>
           <th>Time of Entry</th>
-          <th>Mobile Number</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Area</th>
           <th>Hotel</th>
+          <th>Area</th>
           <th>City</th>
           <th>State</th>
+          <th>Requirement Mentioned</th>
           <th>Search Time</th>
         </tr>
       </thead>
-      <tbody id="read-table-body"></tbody>
+      <tbody id="read-table-body">
+        <!-- Dynamic rows will be added here -->
+      </tbody>
     </table>
-  </div>
-
-  <!-- Write Section -->
-  <div id="write-section">
-    <h2>Write Section</h2>
-    <form id="write-form">
-      <label>Area: <input type="text" id="area" required></label><br>
-      <label>Hotel: <input type="text" id="hotel" required></label><br>
-      <label>City: <input type="text" id="city" required></label><br>
-      <label>State: <input type="text" id="state" required></label><br>
-      <label>Check-in Date: <input type="date" id="check-in" required></label><br>
-      <label>Check-out Date: <input type="date" id="check-out" required></label><br>
-      <label>Agent Remarks: <textarea id="remarks" required></textarea></label><br>
-      <button type="button" id="save-button">Save</button>
-    </form>
-    <a id="download-link" style="display:none;"></a>
   </div>
 </body>
 </html>
