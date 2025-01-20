@@ -47,26 +47,31 @@
       }
 
       const dataFilePath = 'Data.json'; // JSON file path
-      const readSection = document.getElementById('read-section');
 
-      // Function to fetch data and populate the read section
+      // Fetch and display data based on the first record's mobile number
       function fetchData() {
         fetch(dataFilePath)
           .then(response => response.json())
           .then(data => {
-            const mobileNumber = ${record.Mobile_Number}; // Example Mobile Number (you can make this dynamic)
-            const filteredData = data.filter(record => record.Mobile_Number === mobileNumber);
+            if (data.length > 0) {
+              const mobileNumber = data[0].Mobile_Number; // Get the first record's mobile number
+              const filteredData = data.filter(record => record.Mobile_Number === mobileNumber);
 
-            if (filteredData.length > 0) {
-              populateInfoSection(filteredData[0]);
-              populateTableSection(filteredData);
+              if (filteredData.length > 0) {
+                populateInfoSection(filteredData[0]);
+                populateTableSection(filteredData);
+              } else {
+                clearSections();
+                alert('No records found for the current mobile number.');
+              }
             } else {
-              readSection.innerHTML = '<p>No records found for the given mobile number.</p>';
+              clearSections();
+              alert('No data available in the JSON file.');
             }
           })
           .catch(error => {
             console.error('Error fetching data:', error);
-            readSection.innerHTML = '<p>Error loading data.</p>';
+            alert('Error loading data.');
           });
       }
 
@@ -106,7 +111,13 @@
         return date.toLocaleString('en-IN');
       }
 
-      // Fetch and display data
+      // Clear sections if no data is found
+      function clearSections() {
+        document.getElementById('info-box').innerHTML = '';
+        document.getElementById('read-table-body').innerHTML = '';
+      }
+
+      // Fetch and display data for the current record
       fetchData();
     });
   </script>
