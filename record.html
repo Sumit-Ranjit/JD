@@ -132,31 +132,30 @@
   </div>
 
   <script>
-    // Example JSON data
-    const Data = {
-      Time_of_Entry: "45673.88171",
-      Mobile_Number: "9266425342",
-      Name: "Mr Sameer",
-      Email: "sumit.ranjit@oyorooms.com",
-      Area: "Noida Sector 66",
-      Hotel: "Super Townhouse Sector 122 Noida (Noida Sector 122, Delhi)",
-      City: "Delhi",
-      State: "Delhi",
-      Requirement_Mentioned: "Hotels",
-      Search_Time: ""
-    };
+ // Fetch the JSON file
+fetch('Data.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to load Data JSON file');
+    }
+    return response.json(); // Parse the JSON data
+  })
+  .then(Data => {
+    // Access the first record
+    const firstRecord = Data[0];
 
-    // Populate User Details
-    const userDetails = `
-      <p><strong>Mobile Number:</strong> ${Data.Mobile_Number}</p>
-      <p><strong>Name:</strong> ${Data.Name}</p>
-      <p><strong>Email:</strong> ${Data.Email}</p>
-      <p><strong>Area:</strong> ${Data.Area}</p>
-      <p><strong>Hotel:</strong> ${Data.Hotel}</p>
-      <p><strong>City:</strong> ${Data.City}</p>
-      <p><strong>State:</strong> ${Data.State}</p>
-      <p><strong>Requirement Mentioned:</strong> ${Data.Requirement_Mentioned}</p>
-      <p><strong>Search Time:</strong> ${Data.Search_Time || "Not available"}</p>
+    // Display the record
+    const recordDiv = document.getElementById('record');
+    recordDiv.innerHTML = `
+      <p><strong>Mobile Number:</strong> ${firstRecord.Mobile_Number}</p>
+      <p><strong>Name:</strong> ${firstRecord.Name}</p>
+      <p><strong>Email:</strong> ${firstRecord.Email}</p>
+      <p><strong>Area:</strong> ${firstRecord.Area}</p>
+      <p><strong>Hotel:</strong> ${firstRecord.Hotel}</p>
+      <p><strong>City:</strong> ${firstRecord.City}</p>
+      <p><strong>State:</strong> ${firstRecord.State}</p>
+      <p><strong>Requirement Mentioned:</strong> ${firstRecord.Requirement_Mentioned}</p>
+      <p><strong>Search Time:</strong> ${firstRecord.Search_Time || "Not available"}</p>
     `;
     document.getElementById("user-details").innerHTML = userDetails;
 
