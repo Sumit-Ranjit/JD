@@ -15,44 +15,35 @@
   <p id="message"></p>
 
   <script>
-    async function fetchUsers() {
-  try {
-    const response = await fetch('credentials.json'); // Adjust path as needed
+   fetch('Data.json')
+  .then(response => {
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error('Failed to load Data JSON file');
     }
-    const data = await response.json();
-    console.log('Fetched credentials:', data); // Debug log
-    return data;
-  } catch (error) {
-    console.error('Error fetching credentials.json:', error.message);
-    document.getElementById('message').textContent = 'Error fetching user data.';
-    return null;
-  }
-}
+    return response.json(); // Parse the JSON data
+  })
+  .then(Data => {
+    // Access the first record
+    const firstRecord = Data[0];
 
-
-    document.getElementById('loginForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const users = await fetchUsers();
-        const user = users.find(u => u.username === username && u.password === password);
-
-        if (user) {
-          document.getElementById('message').textContent = 'Login successful!';
-          // Redirect or show additional content for authenticated users
-          window.location.href = 'record.html';
-        } else {
-          document.getElementById('message').textContent = 'Invalid username or password.';
-        }
-      } catch (error) {
-        document.getElementById('message').textContent = 'Error fetching user data.';
-        console.error(error);
-      }
-    });
+    // Display the record
+    const recordDiv = document.getElementById('record');
+    recordDiv.innerHTML = `
+      <p><strong>Mobile Number:</strong> ${firstRecord.Mobile_Number}</p>
+      <p><strong>Name:</strong> ${firstRecord.Name}</p>
+      <p><strong>Email:</strong> ${firstRecord.Email}</p>
+      <p><strong>Area:</strong> ${firstRecord.Area}</p>
+      <p><strong>Hotel:</strong> ${firstRecord.Hotel}</p>
+      <p><strong>City:</strong> ${firstRecord.City}</p>
+      <p><strong>State:</strong> ${firstRecord.State}</p>
+      
+    `;
+  })
+  .catch(error => {
+    const recordDiv = document.getElementById('record');
+    recordDiv.innerHTML = `<p>Error loading data: ${error.message}</p>`;
+    console.error('Error:', error);
+  });
   </script>
 
   
