@@ -3,12 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>First Record</title>
+  <title>User Interaction Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .details-box {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <h1>New Record</h1>
-  <div id="record">Loading...</div>
+  <div class="container">
+    <h1>User Details</h1>
+    <div id="user-details" class="details-box">
+      <!-- User details will be dynamically inserted here -->
+    </div>
+    <h2>Update Details</h2>
+    <form id="update-form">
+      <div class="form-group">
+        <label for="call-connected">Call Connected</label>
+        <select id="call-connected" name="call_connected">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="intent-of-call">Intent of Call</label>
+        <select id="intent-of-call" name="intent_of_call">
+          <option value="sales">Sales</option>
+          <option value="service">Service</option>
+          <option value="enquiry">Enquiry</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea id="remarks" name="remarks" placeholder="Remarks (if Other)" style="display:none;"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="booking-id">Booking ID</label>
+        <input type="text" id="booking-id" name="booking_id">
+      </div>
+      <div class="form-group">
+        <label for="check-in-date">Check-In Date</label>
+        <input type="date" id="check-in-date" name="check_in_date">
+      </div>
+      <div class="form-group">
+        <label for="check-out-date">Check-Out Date</label>
+        <input type="date" id="check-out-date" name="check_out_date">
+      </div>
+      <div class="form-group">
+        <label for="num-rooms">Number of Rooms</label>
+        <input type="number" id="num-rooms" name="num_rooms">
+      </div>
+      <div class="form-group">
+        <label for="booking-created">Booking Created</label>
+        <select id="booking-created" name="booking_created">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reason-not-booking">Reason for Not Booking</label>
+        <textarea id="reason-not-booking" name="reason_not_booking"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="prepay-pitched">Prepay Pitched</label>
+        <select id="prepay-pitched" name="prepay_pitched">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="prepay-collected">Prepay Collected</label>
+        <select id="prepay-collected" name="prepay_collected">
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reason-non-prepay">Reason for Non Prepay</label>
+        <textarea id="reason-non-prepay" name="reason_non_prepay"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="agent-remarks">Agent Remarks</label>
+        <textarea id="agent-remarks" name="agent_remarks"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <button type="submit">Update</button>
+    </form>
+  </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Example JSON data
+    const data = {
+      Time_of_Entry: "45673.88171",
+      Mobile_Number: "9266425342",
+      Name: "Mr Sameer",
+      Email: "sumit.ranjit@oyorooms.com",
+      Area: "Noida Sector 66",
+      Hotel: "Super Townhouse Sector 122 Noida (Noida Sector 122, Delhi)",
+      City: "Delhi",
+      State: "Delhi",
+      Requirement_Mentioned: "Hotels",
+      Search_Time: ""
+    };
+
+    // Populate User Details
+    const userDetails = `
+      <p><strong>Mobile Number:</strong> ${data.Mobile_Number}</p>
+      <p><strong>Name:</strong> ${data.Name}</p>
+      <p><strong>Email:</strong> ${data.Email}</p>
+      <p><strong>Area:</strong> ${data.Area}</p>
+      <p><strong>Hotel:</strong> ${data.Hotel}</p>
+      <p><strong>City:</strong> ${data.City}</p>
+      <p><strong>State:</strong> ${data.State}</p>
+      <p><strong>Requirement Mentioned:</strong> ${data.Requirement_Mentioned}</p>
+      <p><strong>Search Time:</strong> ${data.Search_Time || "Not available"}</p>
+    `;
+    document.getElementById("user-details").innerHTML = userDetails;
+
+    // Show/Hide Remarks based on Intent of Call
+    document.getElementById("intent-of-call").addEventListener("change", function () {
+      const remarks = document.getElementById("remarks");
+      remarks.style.display = this.value === "other" ? "block" : "none";
+    });
+  </script>
 </body>
 </html>
