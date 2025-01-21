@@ -1,22 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Record Management</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h1>Record Management</h1>
-    <!-- Read Section -->
-    <div id="read-section">
-        <h2>Read Section</h2>
-        <div id="basic-info">
-            <p><strong>Mobile Number:</strong> <span id="mobile-number"></span></p>
-            <p><strong>Name:</strong> <span id="name"></span></p>
-            <p><strong>Email:</strong> <span id="email"></span></p>
-        </div>
-       <table id="data-table" border="1">
+<!-- Mobile Number, Name, and Email are displayed dynamically -->
+<div id="basic-info"></div>
+
+<!-- User Input Fields -->
+<form id="user-input-form">
+    <label for="call-connected">Call Connected:</label>
+    <select id="call-connected">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select><br>
+
+    <label for="intent-of-call">Intent of Call:</label>
+    <select id="intent-of-call">
+        <option value="Sales">Sales</option>
+        <option value="Service">Service</option>
+        <option value="Enquiry">Enquiry</option>
+        <option value="Others">Others</option>
+    </select><br>
+
+    <label for="remarks-if-others">Remarks if Others:</label>
+    <input type="text" id="remarks-if-others" placeholder="Enter remarks for 'Others'"><br>
+
+    <!-- Additional fields for booking information -->
+    <label for="booking-id">Booking ID:</label>
+    <input type="text" id="booking-id" placeholder="Enter Booking ID"><br>
+
+    <label for="booking-created">Booking Created:</label>
+    <select id="booking-created">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select><br>
+
+    <label for="prepay-collected">Prepay Collected:</label>
+    <select id="prepay-collected">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select><br>
+
+    <label for="agent-remarks">Agent Remarks:</label><br>
+    <textarea id="agent-remarks" rows="4" cols="50" placeholder="Enter agent remarks"></textarea><br>
+
+    <button type="submit" id="submit-btn">Submit</button>
+</form>
+
+<!-- Displaying Table of Data for Mobile Number -->
+<table>
     <thead>
         <tr>
             <th>Sr No</th>
@@ -29,76 +56,5 @@
             <th>Search Time</th>
         </tr>
     </thead>
-    <tbody id="data-table-body">
-        <!-- Rows will be dynamically populated here -->
-    </tbody>
+    <tbody id="data-table-body"></tbody>
 </table>
-    </div>
-    <hr>
-    <!-- Write Section -->
-    <div id="write-section">
-        <h2>Write Section</h2>
-        <form id="write-form">
-            <!-- Call Details -->
-            <label for="call-connected">Call Connected:</label>
-            <select id="call-connected">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <br><br>
-            
-            <label for="intent-of-call">Intent of Call:</label>
-            <select id="intent-of-call">
-                <option value="Sales">Sales</option>
-                <option value="Service">Service</option>
-                <option value="Enquiry">Enquiry</option>
-                <option value="Others">Others</option>
-            </select>
-            <br><br>
-
-            <div id="remarks-section" style="display: none;">
-                <label for="remarks-if-others">Remarks (if Others):</label>
-                <textarea id="remarks-if-others"></textarea>
-                <br><br>
-            </div>
-
-            <!-- Booking Details -->
-            <label for="booking-id">Booking ID:</label>
-            <input type="text" id="booking-id">
-            <br><br>
-
-            <label for="booking-done">Booking Done:</label>
-            <select id="booking-done">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <br><br>
-
-            <label for="prepay-collected">Prepay Collected:</label>
-            <select id="prepay-collected">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-            <br><br>
-
-            <label for="reason-non-prepay">Reason for Non-Prepay:</label>
-            <input type="text" id="reason-non-prepay">
-            <br><br>
-
-            <label for="agent-remarks">Agent Remarks:</label>
-            <textarea id="agent-remarks"></textarea>
-            <br><br>
-
-            <label for="status">Status:</label>
-            <input type="text" id="status" value="Done" readonly>
-            <br><br>
-
-            <!-- Save Button -->
-            <button type="button" id="save-button">Save Data</button>
-        </form>
-    </div>
-
-    <script src="read-script.js"></script>
-    <script src="write-script.js"></script>
-</body>
-</html>
