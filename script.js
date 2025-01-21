@@ -1,43 +1,11 @@
-window.onload = () => {
+// Function to load Data.json into IndexedDB
+function loadDataFromJSON() {
     const dbName = "user_data_db";
     const storeName = "user_data_store";
-    const dataUrl = "./Data.json"; // Path to your Data.json file
+    const dataUrl = "./Data.json"; // Ensure this path points to your Data.json file
 
-    const request = indexedDB.open(dbName, 1);
     // Open IndexedDB
-    request.onsuccess = function (event) {
-        const db = event.target.result;
-
-        // Fetch the data from Data.json
-        fetch(dataUrl)
-            .then((response) => response.json())
-            .then((data) => {
-                const transaction = db.transaction(storeName, "readwrite");
-                const store = transaction.objectStore(storeName);
-
-                // Add each record to the object store
-                data.forEach((record) => {
-                    const getRequest = store.get(record.Mobile_Number);
-                    getRequest.onsuccess = function () {
-                        store.put(record); // Overwrite if key exists
-                    };
-                    getRequest.onerror = function (event) {
-                        console.error("Error fetching record:", event.target.error);
-                    };
-                });
-
-                transaction.oncomplete = function () {
-                    console.log("Data successfully loaded into IndexedDB.");
-                };
-
-                transaction.onerror = function (event) {
-                    console.error("Transaction failed:", event.target.error);
-                };
-            })
-            .catch((error) => {
-                console.error("Error loading Data.json:", error);
-            });
-    };
+    const request = indexedDB.open(dbName, 1);
 
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
@@ -79,3 +47,6 @@ window.onload = () => {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 }
+
+// Call this function to load the data
+loadDataFromJSON();
