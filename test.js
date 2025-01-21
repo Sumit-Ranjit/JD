@@ -23,7 +23,10 @@ request.onsuccess = function(event) {
 
             // Add data to the object store
             data.forEach(item => {
-                objectStore.add(item);
+                let request = objectStore.add(item);
+                request.onerror = function(event) {
+                    console.error("Error adding item:", event.target.error);
+                };
             });
 
             transaction.oncomplete = function() {
