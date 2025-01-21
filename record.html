@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <title>Record Management</title>
     <style>
-        /* Add basic styling */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -39,31 +38,30 @@
 <body>
     <h1>Record Management</h1>
 
-   <div id="basic-info">
-    <p>Mobile Number: <span id="mobileNumber">N/A</span></p>
-    <p>Name: <span id="name">N/A</span></p>
-    <p>Email: <span id="email">N/A</span></p>
-</div>
+    <div id="basic-info">
+        <p>Mobile Number: <span id="mobileNumber">N/A</span></p>
+        <p>Name: <span id="name">N/A</span></p>
+        <p>Email: <span id="email">N/A</span></p>
+    </div>
 
-<table id="data-table">
-    <thead>
-        <tr>
-            <th>Sr No</th>
-            <th>Time of Entry</th>
-            <th>Hotel</th>
-            <th>Area</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Requirement Mentioned</th>
-            <th>Search Time</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Rows will be populated here -->
-    </tbody>
-</table>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Sr No</th>
+                <th>Time of Entry</th>
+                <th>Hotel</th>
+                <th>Area</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Requirement Mentioned</th>
+                <th>Search Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated here -->
+        </tbody>
+    </table>
 
-    <!-- User Input Form Section -->
     <form id="user-input-form">
         <label for="call-connected">Call Connected:</label>
         <select id="call-connected">
@@ -103,8 +101,6 @@
         <button type="submit" id="submit-btn">Submit</button>
     </form>
 
-    <!-- Linking the JavaScript Files -->
-    <script src="script.js"></script>
     <script src="write-script.js"></script>
     <script src="read-script.js"></script>
 </body>
