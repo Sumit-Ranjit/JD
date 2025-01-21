@@ -3,7 +3,6 @@ let mobileNumberRecords = [];
 let selectedMobileNumber = "";
 
 // Elements
-const loadDataButton = document.getElementById("loadDataButton");
 const readSection = document.getElementById("readSection");
 const writeSection = document.querySelector(".write-section");
 const mobileNumberSpan = document.getElementById("mobileNumber");
@@ -12,10 +11,6 @@ const emailSpan = document.getElementById("email");
 const readTable = document.getElementById("readTable").getElementsByTagName("tbody")[0];
 const saveButton = document.getElementById("saveButton");
 const updateDataButton = document.getElementById("updateDataButton");
-
-// File handles
-let dataFileHandle = null;
-let writeFileHandle = null;
 
 // Utility: Convert Excel Date to ISO
 function convertExcelDate(excelDate) {
@@ -30,21 +25,15 @@ function showReadSection() {
     updateDataButton.style.display = "block";
 }
 
-// Load Data.json
-loadDataButton.addEventListener("click", async () => {
+// Fetch Data.json from Repository
+async function loadDataFromRepo() {
     try {
-        [dataFileHandle] = await window.showOpenFilePicker({
-            types: [
-                {
-                    description: "JSON Files",
-                    accept: { "application/json": [".json"] },
-                },
-            ],
-        });
+        const response = await fetch('./Data.json'); // Assumes Data.json is in the same directory as the HTML file
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-        const file = await dataFileHandle.getFile();
-        const text = await file.text();
-        data = JSON.parse(text);
+        data = await response.json();
 
         if (!data || data.length === 0) {
             alert("No data found in the file!");
@@ -66,6 +55,7 @@ loadDataButton.addEventListener("click", async () => {
         emailSpan.textContent = data[0]?.Email || "N/A";
 
         // Populate the table
+        readTable.innerHTML = ""; // Clear the table first
         mobileNumberRecords.forEach(record => {
             const row = readTable.insertRow();
             row.insertCell(0).textContent = record["Sr No"];
@@ -81,37 +71,19 @@ loadDataButton.addEventListener("click", async () => {
         showReadSection();
         console.log("Data loaded successfully.");
     } catch (error) {
-        console.error("Error loading Data.json:", error);
-        alert("Failed to load the data. Please check the console for details.");
+        console.error("Error loading Data.json from repository:", error);
+        alert("Failed to load the data from the repository. Please check the console for details.");
     }
-});
+}
 
 // Save to Write-Record.json
 saveButton.addEventListener("click", async () => {
     try {
-        if (!mobileNumberRecords || mobileNumberRecords.length === 0) {
-            alert("No records to save!");
-            return;
-        }
+        const updatedData = [...mobileNumberRecords];
 
-        if (!writeFileHandle) {
-            [writeFileHandle] = await window.showSaveFilePicker({
-                suggestedName: "Write-Record.json",
-                types: [
-                    {
-                        description: "JSON Files",
-                        accept: { "application/json": [".json"] },
-                    },
-                ],
-            });
-        }
-
-        const writableStream = await writeFileHandle.createWritable();
-        await writableStream.write(JSON.stringify(mobileNumberRecords, null, 2));
-        await writableStream.close();
-
-        alert("Records saved to Write-Record.json successfully!");
-        console.log("Records saved:", mobileNumberRecords);
+        // Simulate writing to Write-Record.json
+        console.log("Saving the following records to Write-Record.json:", updatedData);
+        alert("Records saved successfully (simulated)!");
     } catch (error) {
         console.error("Error saving records:", error);
         alert("Failed to save the records. Please check the console for details.");
@@ -123,15 +95,14 @@ updateDataButton.addEventListener("click", async () => {
     try {
         const remainingRecords = data.filter(record => record.Mobile_Number !== selectedMobileNumber);
 
-        const writableStream = await dataFileHandle.createWritable();
-        await writableStream.write(JSON.stringify(remainingRecords, null, 2));
-        await writableStream.close();
-
-        alert("Data.json updated successfully!");
-        console.log("Updated data:", remainingRecords);
+        console.log("Updated Data.json contents (simulated):", remainingRecords);
+        alert("Data.json updated successfully (simulated)!");
         location.reload();
     } catch (error) {
         console.error("Error updating Data.json:", error);
         alert("Failed to update Data.json. Please check the console for details.");
     }
 });
+
+// Automatically load the data from the repository when the page loads
+window.addEventListener("DOMContentLoaded", loadDataFromRepo);
