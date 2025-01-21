@@ -1,157 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Record Management</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    table, th, td {
-      border: 1px solid black;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    .section h2 {
-      margin-bottom: 10px;
-    }
-    .info-box {
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      background-color: #f9f9f9;
-    }
-  </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Ensure user is logged in
-      if (!localStorage.getItem('loggedInUser')) {
-        alert('You need to log in first!');
-        window.location.href = 'index.html';
-        return;
-      }
-
-      const dataFilePath = 'Data.json'; // JSON file path
-
-      // Fetch and display data based on the first record's mobile number
-      function fetchData() {
-        fetch(dataFilePath)
-          .then(response => response.json())
-          .then(data => {
-            if (data.length > 0) {
-              const mobileNumber = data[0].Mobile_Number; // Get the first record's mobile number
-              const filteredData = data.filter(record => record.Mobile_Number === mobileNumber);
-
-              if (filteredData.length > 0) {
-                populateInfoSection(filteredData[0]);
-                populateTableSection(filteredData);
-              } else {
-                clearSections();
-                alert('No records found for the current mobile number.');
-              }
-            } else {
-              clearSections();
-              alert('No data available in the JSON file.');
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('Error loading data.');
-          });
-      }
-
-      // Populate the info section
-      function populateInfoSection(record) {
-        document.getElementById('info-box').innerHTML = `
-          <p><strong>Mobile Number:</strong> ${record.Mobile_Number}</p>
-          <p><strong>Name:</strong> ${record.Name}</p>
-          <p><strong>Email:</strong> ${record.Email}</p>
-        `;
-      }
-
-      // Populate the table section
-      function populateTableSection(data) {
-        const tableBody = document.getElementById('read-table-body');
-        tableBody.innerHTML = '';
-
-        data.forEach(record => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${record['Sr No']}</td>
-            <td>${formatDate(record['Time_of_Entry'])}</td>
-            <td>${record['Hotel']}</td>
-            <td>${record['Area']}</td>
-            <td>${record['City']}</td>
-            <td>${record['State']}</td>
-            <td>${record['Requirement Mentioned']}</td>
-            <td>${formatDate(record['Search Time'])}</td>
-          `;
-          tableBody.appendChild(row);
-        });
-      }
-
-      // Format Excel date to dd/mm/yyyy hh:mm:ss
-      function formatDate(excelDate) {
-        const date = new Date((excelDate - 25569) * 86400 * 1000);
-        return date.toLocaleString('en-IN');
-      }
-
-      // Clear sections if no data is found
-      function clearSections() {
-        document.getElementById('info-box').innerHTML = '';
-        document.getElementById('read-table-body').innerHTML = '';
-      }
-
-      // Fetch and display data for the current record
-      fetchData();
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read and Write Records</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Record Management</h1>
+    <div class="container">
+        <h1>Read Section</h1>
+        <div class="read-section">
+            <h3>Basic Details</h3>
+            <p><strong>Mobile Number:</strong> <span id="mobileNumber"></span></p>
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
 
-  <!-- Read Section -->
-  <div id="read-section" class="section">
-    <h2>Read Section</h2>
+            <h3>Record Details</h3>
+            <table id="readTable" border="1">
+                <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Time of Entry</th>
+                        <th>Hotel</th>
+                        <th>Area</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Requirement Mentioned</th>
+                        <th>Search Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows dynamically populated -->
+                </tbody>
+            </table>
+        </div>
 
-    <!-- Info Section -->
-    <div id="info-box" class="info-box">
-      <!-- Mobile Number, Name, and Email will be populated here -->
+        <div class="write-section">
+            <h1>Write Section</h1>
+            <form id="writeForm">
+                <label for="bookingId">Booking ID:</label>
+                <input type="text" id="bookingId" required>
+
+                <label for="checkInDate">Check-In Date:</label>
+                <input type="date" id="checkInDate" required>
+
+                <label for="checkOutDate">Check-Out Date:</label>
+                <input type="date" id="checkOutDate" required>
+
+                <label for="numRooms">Number of Rooms:</label>
+                <input type="number" id="numRooms" required>
+
+                <label for="bookingCreated">Booking Created or Not:</label>
+                <select id="bookingCreated" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+
+                <label for="reasonNonBooking">Reason of Non-Booking:</label>
+                <input type="text" id="reasonNonBooking">
+
+                <label for="prepayPitched">Prepay Pitched:</label>
+                <select id="prepayPitched" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+
+                <label for="prepayCollected">Prepay Collected:</label>
+                <select id="prepayCollected" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+
+                <label for="reasonNonPrepay">Reason of Non-Prepay:</label>
+                <input type="text" id="reasonNonPrepay">
+
+                <label for="agentRemarks">Agent Remarks:</label>
+                <textarea id="agentRemarks" rows="4"></textarea>
+
+                <label for="status">Status:</label>
+                <select id="status" required>
+                    <option value="Done">Done</option>
+                    <option value="Not Done">Not Done</option>
+                </select>
+
+                <button type="button" id="saveButton">Save</button>
+            </form>
+        </div>
     </div>
-
-    <!-- Table Section -->
-    <table>
-      <thead>
-        <tr>
-          <th>Sr No</th>
-          <th>Time of Entry</th>
-          <th>Hotel</th>
-          <th>Area</th>
-          <th>City</th>
-          <th>State</th>
-          <th>Requirement Mentioned</th>
-          <th>Search Time</th>
-        </tr>
-      </thead>
-      <tbody id="read-table-body">
-        <!-- Dynamic rows will be added here -->
-      </tbody>
-    </table>
-  </div>
+    <script src="write-script.js"></script>
 </body>
 </html>
