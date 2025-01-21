@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(dataUrl)
         .then((response) => response.json())
         .then((data) => {
-            const mobileNumberToSearch = "9082175513"; // Replace with dynamic logic later
+            const mobileNumberToSearch = document.getElementById('currentMobileNumber').value; // Replace with dynamic logic later
             const records = data.filter(
                 (entry) => entry.Mobile_Number === mobileNumberToSearch
             );
