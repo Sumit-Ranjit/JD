@@ -1,4 +1,8 @@
 // Function to fetch all records from IndexedDB and save them to a JSON file
+window.onload = function() {
+    // Call the export function when the window loads
+    exportIndexedDBToJSON();
+};
 function exportIndexedDBToJSON() {
     const dbName = "user_data_db";
     const storeName = "user_data_store";
