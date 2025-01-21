@@ -13,10 +13,13 @@
     <!-- Read Section -->
     <div id="readSection" style="display: none;">
         <h2>Read Section</h2>
+        <!-- Basic Info -->
         <p><strong>Mobile Number:</strong> <span id="mobileNumber"></span></p>
         <p><strong>Name:</strong> <span id="name"></span></p>
         <p><strong>Email:</strong> <span id="email"></span></p>
 
+        <!-- Table Section -->
+        <h3>Details Table</h3>
         <table id="readTable" border="1">
             <thead>
                 <tr>
@@ -31,18 +34,49 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Dynamic Rows Will Be Inserted Here -->
             </tbody>
         </table>
     </div>
 
     <!-- Write Section -->
-    <div class="write-section" style="display: none;">
+    <div class="write-section" style="display: none; margin-top: 20px;">
         <h2>Write Section</h2>
         <form id="writeForm">
-            <!-- Add write form fields here -->
+            <!-- Additional Write Fields -->
+            <label for="callConnected">Call Connected:</label>
+            <select id="callConnected" required>
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+            <br><br>
+
+            <label for="intentOfCall">Intent of Call:</label>
+            <select id="intentOfCall" required>
+                <option value="">Select</option>
+                <option value="Sales">Sales</option>
+                <option value="Service">Service</option>
+                <option value="Enquiry">Enquiry</option>
+                <option value="Others">Others</option>
+            </select>
+            <br><br>
+
+            <!-- Mandatory Remarks if 'Others' is Selected -->
+            <div id="remarksIfOthersSection" style="display: none;">
+                <label for="remarksIfOthers">Remarks (if Others):</label>
+                <input type="text" id="remarksIfOthers">
+                <br><br>
+            </div>
+
             <button type="button" id="saveButton">Save</button>
             <button type="button" id="updateDataButton">Update Data.json</button>
         </form>
     </div>
+
+    <script>
+        // Ensure the script file works
+        console.log("HTML file is connected to the script.js");
+    </script>
 </body>
 </html>
