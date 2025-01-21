@@ -32,18 +32,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function populateHeader(record) {
-        const mobileNumberElement = document.getElementById("mobile-number");
-        const nameElement = document.getElementById("name");
-        const emailElement = document.getElementById("email");
+        const basicInfoElement = document.getElementById("basic-info");
 
-        if (!mobileNumberElement || !nameElement || !emailElement) {
-            console.error("One or more header elements not found.");
+        if (!basicInfoElement) {
+            console.error("Basic info element not found.");
             return;
         }
 
-        mobileNumberElement.textContent = record["Mobile_Number"] || "N/A";
-        nameElement.textContent = record["Name"] || "N/A";
-        emailElement.textContent = record["Email"] || "N/A";
+        // Clear existing content
+        basicInfoElement.innerHTML = "";
+
+        // Create and populate the content dynamically
+        basicInfoElement.innerHTML = `
+            <strong>Mobile Number:</strong> ${record["Mobile_Number"] || "N/A"}<br>
+            <strong>Name:</strong> ${record["Name"] || "N/A"}<br>
+            <strong>Email:</strong> ${record["Email"] || "N/A"}<br>
+        `;
     }
 
     function populateTable(records) {
