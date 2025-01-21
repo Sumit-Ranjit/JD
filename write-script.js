@@ -1,7 +1,7 @@
 document.getElementById("updateDataButton").addEventListener("click", async () => {
     try {
         // Fetch Data.json
-        const response = await fetch("./Data.json");
+        const response = await fetch("Data.json");
         const data = await response.json();
 
         // Get form data
