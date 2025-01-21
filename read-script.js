@@ -10,27 +10,31 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const currentMobileNumber = localStorage.getItem('currentMobileNumber'); // Get current mobile number
+    if (!currentMobileNumber) {
+        alert("No mobile number found to display records.");
+        return;
+    }
+
     fetch(dataUrl)
         .then((response) => response.json())
         .then((data) => {
-            const mobileNumberToSearch = document.getElementById('nextRecord'); // Replace with dynamic logic later
-            const records = data.filter(
-                (entry) => entry.Mobile_Number === mobileNumberToSearch
-            );
+            // Filter records for the current mobile number
+            const records = data.filter((entry) => entry.Mobile_Number === currentMobileNumber);
 
             if (records.length > 0) {
-                // Populate Basic Info
+                // Populate Basic Info with the first matching record
                 const firstRecord = records[0];
                 mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
                 nameField.textContent = firstRecord.Name || "N/A";
                 emailField.textContent = firstRecord.Email || "N/A";
 
-                // Populate Table
+                // Populate the table with all matching records
                 tableBody.innerHTML = ""; // Clear previous rows
-                records.forEach((record) => {
+                records.forEach((record, index) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                        <td>${record["Sr_No"] || "N/A"}</td>
+                        <td>${index + 1}</td>
                         <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
                         <td>${record["Hotel"] || "N/A"}</td>
                         <td>${record["Area"] || "N/A"}</td>
