@@ -1,7 +1,82 @@
+document.addEventListener('DOMContentLoaded', async function () {
+    // Load data from Data.json and display it
+    try {
+        const response = await fetch('Data.json');
+        const data = await response.json();
+
+        // Display Mobile Number, Name, and Email
+        const mobileNumberEl = document.getElementById('mobileNumber');
+        const nameEl = document.getElementById('name');
+        const emailEl = document.getElementById('email');
+
+        if (data.length > 0) {
+            const firstRecord = data[0];
+            mobileNumberEl.innerText = firstRecord.Mobile_Number || 'N/A';
+            nameEl.innerText = firstRecord.Name || 'N/A';
+            emailEl.innerText = firstRecord.Email || 'N/A';
+
+            // Populate the table with records of the same mobile number
+            const tableContainer = document.getElementById('tableContainer');
+            tableContainer.innerHTML = ''; // Clear previous data
+
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Time of Entry</th>
+                        <th>Hotel</th>
+                        <th>Area</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Requirement Mentioned</th>
+                        <th>Search Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            `;
+
+            const tbody = table.querySelector('tbody');
+
+            // Filter records by the same mobile number
+            const filteredRecords = data.filter(record => record.Mobile_Number === firstRecord.Mobile_Number);
+
+            filteredRecords.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record["Sr No"]}</td>
+                    <td>${convertExcelDateToJSDate(record["Time_of_Entry"])}</td>
+                    <td>${record["Hotel"]}</td>
+                    <td>${record["Area"]}</td>
+                    <td>${record["City"]}</td>
+                    <td>${record["State"]}</td>
+                    <td>${record["Requirement Mentioned"]}</td>
+                    <td>${record["Search Time"]}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            tableContainer.appendChild(table);
+        } else {
+            alert("No data found in Data.json.");
+        }
+    } catch (error) {
+        console.error("Error loading Data.json:", error);
+    }
+});
+
+// Function to convert Excel datetime to readable format
+function convertExcelDateToJSDate(excelDate) {
+    if (!excelDate) return 'N/A';
+    const jsDate = new Date((excelDate - 25569) * 86400 * 1000);
+    return jsDate.toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' }); // Format: DD/MM/YYYY HH:mm:ss
+}
+
+// Handle form submission for write section
 document.getElementById("updateDataButton").addEventListener("click", async () => {
     try {
-        // Fetch Data.json
-        const response = await fetch('Data.json');
+        const response = await fetch('./Data.json');
         const data = await response.json();
 
         // Get form data
@@ -12,8 +87,10 @@ document.getElementById("updateDataButton").addEventListener("click", async () =
             return;
         }
 
-        // Find all entries with the current mobile number
+        // Get the mobile number from the read section
         const mobileNumber = document.getElementById("mobileNumber").innerText.trim();
+
+        // Find all entries with the current mobile number
         const matchingRecords = data.filter(record => record.Mobile_Number === mobileNumber);
 
         if (matchingRecords.length === 0) {
@@ -24,10 +101,10 @@ document.getElementById("updateDataButton").addEventListener("click", async () =
         // Remove matching records from Data.json
         const updatedData = data.filter(record => record.Mobile_Number !== mobileNumber);
 
-        // Add matching records to form data and write to Write-Record.json
+        // Append the updated form data to Write-Record.json
         matchingRecords.forEach(record => {
             formData["Sr No"] = record["Sr No"];
-            formData["Time_of_Entry"] = record["Time_of_Entry"];
+            formData["Time of Entry"] = record["Time_of_Entry"];
             formData["Mobile_Number"] = record["Mobile_Number"];
             formData["Name"] = record["Name"];
             formData["Email"] = record["Email"];
