@@ -1,5 +1,5 @@
 // Function to submit the form and save the data to IndexedDB
-document.getElementById('user-input-form').addEventListener('submit', function (e) {
+document.getElementById('data-table').addEventListener('submit', function (e) {
     e.preventDefault(); // Prevent form submission
 
     const currentMobileNumber = localStorage.getItem('currentMobileNumber'); // Get mobile number
