@@ -44,7 +44,7 @@ function populateTable(records) {
     records.forEach((record) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td>${record["Sr No"] || "N/A"}</td>
+            <td>${record["Sr_No"] || "N/A"}</td>
             <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
             <td>${record["Hotel"] || "N/A"}</td>
             <td>${record["Area"] || "N/A"}</td>
