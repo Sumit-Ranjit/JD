@@ -1,4 +1,4 @@
-// Read Data.json and filter for current mobile number
+// Read Data.json and filter by mobile number
 function loadAndFilterData(currentMobileNumber) {
     fetch("Data.json")
         .then((response) => {
@@ -8,12 +8,20 @@ function loadAndFilterData(currentMobileNumber) {
             return response.json();
         })
         .then((data) => {
-            // Filter records by current mobile number
+            console.log("Loaded data:", data); // Debug: Log all data to ensure it's loaded correctly
+
+            // Filter records by mobile number
             const filteredRecords = data.filter(
                 (record) => record["Mobile_Number"] === currentMobileNumber
             );
 
-            // Update the table with filtered records
+            console.log("Filtered records:", filteredRecords); // Debug: Check the filtered data
+
+            if (filteredRecords.length === 0) {
+                alert(`No records found for mobile number: ${currentMobileNumber}`);
+            }
+
+            // Populate table with the filtered records
             populateTable(filteredRecords);
         })
         .catch((error) => {
@@ -21,35 +29,40 @@ function loadAndFilterData(currentMobileNumber) {
         });
 }
 
-// Function to populate the table
+// Populate the table with records
 function populateTable(records) {
     const tableBody = document.getElementById("data-table-body");
-    tableBody.innerHTML = ""; // Clear previous rows
+    tableBody.innerHTML = ""; // Clear existing rows
+
+    if (records.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="8">No records available for the selected mobile number.</td>`;
+        tableBody.appendChild(row);
+        return;
+    }
 
     records.forEach((record) => {
         const row = document.createElement("tr");
-
         row.innerHTML = `
-            <td>${record["Sr No"]}</td>
-            <td>${convertExcelDate(record["Time_of_Entry"])}</td>
-            <td>${record["Hotel"]}</td>
-            <td>${record["Area"]}</td>
-            <td>${record["City"]}</td>
-            <td>${record["State"]}</td>
-            <td>${record["Requirement Mentioned"]}</td>
-            <td>${record["Search Time"]}</td>
+            <td>${record["Sr No"] || "N/A"}</td>
+            <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
+            <td>${record["Hotel"] || "N/A"}</td>
+            <td>${record["Area"] || "N/A"}</td>
+            <td>${record["City"] || "N/A"}</td>
+            <td>${record["State"] || "N/A"}</td>
+            <td>${record["Requirement Mentioned"] || "N/A"}</td>
+            <td>${record["Search Time"] || "N/A"}</td>
         `;
-
         tableBody.appendChild(row);
     });
 }
 
-// Function to convert Excel date format to DD/MM/YYYY HH:mm:ss
+// Convert Excel date to readable format
 function convertExcelDate(excelDate) {
-    const date = new Date((excelDate - 25569) * 86400 * 1000); // Convert to JavaScript date
+    const date = new Date((excelDate - 25569) * 86400 * 1000);
     return date.toLocaleString("en-GB", { timeZone: "Asia/Kolkata" }); // Format as DD/MM/YYYY HH:mm:ss
 }
 
-// Call the function with the mobile number of the current record
-const currentMobileNumber = "9082175513"; // Replace with dynamic mobile number if necessary
+// Set the current mobile number (replace with dynamic value if needed)
+const currentMobileNumber = "9082175513"; // Replace with the actual mobile number dynamically
 loadAndFilterData(currentMobileNumber);
