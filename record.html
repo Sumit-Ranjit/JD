@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Read and Write Records</title>
+    <title>Record Management</title>
     <link rel="stylesheet" href="style.css">
+    <script src="write-script.js" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Read Section</h1>
-        <button id="loadDataButton">Load Data.json</button>
-        <div id="readSection" style="display: none;">
-            <h3>Basic Details</h3>
-            <p><strong>Mobile Number:</strong> <span id="mobileNumber"></span></p>
-            <p><strong>Name:</strong> <span id="name"></span></p>
-            <p><strong>Email:</strong> <span id="email"></span></p>
+    <h1>Record Management</h1>
 
-            <h3>Record Details</h3>
-            <table id="readTable" border="1">
-                <thead>
-                    <tr>
-                        <th>Sr No</th>
-                        <th>Time of Entry</th>
-                        <th>Hotel</th>
-                        <th>Area</th>
-                        <th>City</th>
-                        <th>State</th>
-                        <th>Requirement Mentioned</th>
-                        <th>Search Time</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    <!-- Read Section -->
+    <div id="readSection" style="display: none;">
+        <h2>Read Section</h2>
+        <p><strong>Mobile Number:</strong> <span id="mobileNumber"></span></p>
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
 
-        <div class="write-section" style="display: none;">
-            <h1>Write Section</h1>
-            <form id="writeForm">
-                <!-- Add other fields here -->
-                <button type="button" id="saveButton">Save to Write-Record.json</button>
-            </form>
-        </div>
-
-        <button id="updateDataButton" style="display: none;">Update Data.json</button>
+        <table id="readTable" border="1">
+            <thead>
+                <tr>
+                    <th>Sr No</th>
+                    <th>Time of Entry</th>
+                    <th>Hotel</th>
+                    <th>Area</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Requirement Mentioned</th>
+                    <th>Search Time</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
-    <script src="write-script.js"></script>
+
+    <!-- Write Section -->
+    <div class="write-section" style="display: none;">
+        <h2>Write Section</h2>
+        <form id="writeForm">
+            <!-- Add write form fields here -->
+            <button type="button" id="saveButton">Save</button>
+            <button type="button" id="updateDataButton">Update Data.json</button>
+        </form>
+    </div>
 </body>
 </html>
