@@ -2,8 +2,11 @@ const readTable = document.getElementById('readTable').getElementsByTagName('tbo
 const mobileNumberSpan = document.getElementById('mobileNumber');
 const nameSpan = document.getElementById('name');
 const emailSpan = document.getElementById('email');
+const intentOfCall = document.getElementById('intentOfCall');
+const remarksIfOthersSection = document.getElementById('remarksIfOthersSection');
+const remarksIfOthers = document.getElementById('remarksIfOthers');
 
-// Mock data (replace this with actual fetch from Data.json)
+// Mock data (replace with actual fetch from Data.json)
 const data = [
     {
         "Sr No": "804",
@@ -52,9 +55,23 @@ function convertExcelDate(excelDate) {
     return date.toISOString().slice(0, 19).replace('T', ' ');
 }
 
+// Show or hide "Remarks if Others" field
+intentOfCall.addEventListener('change', () => {
+    if (intentOfCall.value === 'Others') {
+        remarksIfOthersSection.style.display = 'block';
+        remarksIfOthers.setAttribute('required', true);
+    } else {
+        remarksIfOthersSection.style.display = 'none';
+        remarksIfOthers.removeAttribute('required');
+    }
+});
+
 // Save button logic
 document.getElementById('saveButton').addEventListener('click', () => {
     const formData = {
+        "Call Connected": document.getElementById('callConnected').value,
+        "Intent of Call": intentOfCall.value,
+        "Remarks if Others": remarksIfOthers.value,
         "Booking ID": document.getElementById('bookingId').value,
         "Check-In Date": document.getElementById('checkInDate').value,
         "Check-Out Date": document.getElementById('checkOutDate').value,
