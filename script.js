@@ -10,35 +10,36 @@ document.addEventListener("DOMContentLoaded", () => {
         const db = event.target.result;
         // Create an object store if it doesn't exist
         if (!db.objectStoreNames.contains(storeName)) {
-            db.createObjectStore(storeName, { keyPath: 'Mobile_Number' });
+            db.createObjectStore(storeName, { keyPath: "Mobile_Number" });
         }
     };
 
     request.onsuccess = function (event) {
         const db = event.target.result;
-        const transaction = db.transaction(storeName, "readwrite");
-        const store = transaction.objectStore(storeName);
 
+        // Fetch the data from Data.json
         fetch(dataUrl)
-            .then(response => response.json()) // Get JSON data from Data.json
-            .then(data => {
-                // Insert each record into IndexedDB
-                data.forEach(record => {
-                    store.put(record); // Put the record into the object store
+            .then((response) => response.json())
+            .then((data) => {
+                const transaction = db.transaction(storeName, "readwrite");
+                const store = transaction.objectStore(storeName);
+
+                // Add each record to the object store
+                data.forEach((record) => {
+                    store.put(record);
                 });
-                console.log("Data successfully loaded into IndexedDB.");
+
+                transaction.oncomplete = function () {
+                    console.log("Data successfully loaded into IndexedDB.");
+                };
+
+                transaction.onerror = function (event) {
+                    console.error("Transaction failed:", event.target.error);
+                };
             })
             .catch((error) => {
                 console.error("Error loading Data.json:", error);
             });
-
-        transaction.oncomplete = function () {
-            console.log("Transaction completed and data inserted into IndexedDB.");
-        };
-
-        transaction.onerror = function (event) {
-            console.error("Transaction failed:", event.target.error);
-        };
     };
 
     request.onerror = function (event) {
