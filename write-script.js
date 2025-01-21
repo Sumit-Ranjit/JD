@@ -9,7 +9,7 @@ request.onupgradeneeded = (event) => {
     db = event.target.result;
 
     if (!db.objectStoreNames.contains(storeName)) {
-        db.createObjectStore(storeName, { keyPath: "Sr No" }); // Using "Sr No" as the unique key
+        db.createObjectStore(storeName, { keyPath: "Sr_No" }); // Using "Sr No" as the unique key
     }
 };
 
