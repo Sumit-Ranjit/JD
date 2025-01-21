@@ -38,55 +38,88 @@
         <div class="write-section">
             <h1>Write Section</h1>
             <form id="writeForm">
+                <label for="callConnected">Call Connected:</label>
+                <select id="callConnected" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+                <br>
+
+                <label for="intentOfCall">Intent of Call:</label>
+                <select id="intentOfCall" required>
+                    <option value="Sales">Sales</option>
+                    <option value="Service">Service</option>
+                    <option value="Enquiry">Enquiry</option>
+                    <option value="Others">Others</option>
+                </select>
+                <br>
+
+                <div id="remarksIfOthersSection" style="display: none;">
+                    <label for="remarksIfOthers">Remarks if Others:</label>
+                    <input type="text" id="remarksIfOthers" placeholder="Provide details if Others is selected">
+                    <br>
+                </div>
+
                 <label for="bookingId">Booking ID:</label>
                 <input type="text" id="bookingId" required>
+                <br>
 
                 <label for="checkInDate">Check-In Date:</label>
                 <input type="date" id="checkInDate" required>
+                <br>
 
                 <label for="checkOutDate">Check-Out Date:</label>
                 <input type="date" id="checkOutDate" required>
+                <br>
 
                 <label for="numRooms">Number of Rooms:</label>
                 <input type="number" id="numRooms" required>
+                <br>
 
                 <label for="bookingCreated">Booking Created or Not:</label>
                 <select id="bookingCreated" required>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>
+                <br>
 
                 <label for="reasonNonBooking">Reason of Non-Booking:</label>
                 <input type="text" id="reasonNonBooking">
+                <br>
 
                 <label for="prepayPitched">Prepay Pitched:</label>
                 <select id="prepayPitched" required>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>
+                <br>
 
                 <label for="prepayCollected">Prepay Collected:</label>
                 <select id="prepayCollected" required>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>
+                <br>
 
                 <label for="reasonNonPrepay">Reason of Non-Prepay:</label>
                 <input type="text" id="reasonNonPrepay">
+                <br>
 
                 <label for="agentRemarks">Agent Remarks:</label>
                 <textarea id="agentRemarks" rows="4"></textarea>
+                <br>
 
                 <label for="status">Status:</label>
                 <select id="status" required>
                     <option value="Done">Done</option>
                     <option value="Not Done">Not Done</option>
                 </select>
+                <br>
 
                 <button type="button" id="saveButton">Save</button>
             </form>
         </div>
     </div>
-    <script src="write-script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
