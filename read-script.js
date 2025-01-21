@@ -1,93 +1,68 @@
-document.addEventListener("DOMContentLoaded", () => {
-    function loadAndFilterData(currentMobileNumber) {
-        fetch("Data.json")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to load Data.json");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Loaded data:", data);
+let currentIndex = 0; // Index to track the current record
 
-                // Filter records by mobile number
-                const filteredRecords = data.filter(
-                    (record) => record["Mobile_Number"] === currentMobileNumber
-                );
+// Function to load and display the first record (and next mobile number)
+function loadNextRecord() {
+    fetch("Data.json")
+        .then(response => response.json())
+        .then(data => {
+            // Ensure there are records to process
+            if (data.length === 0) {
+                alert("No records found.");
+                return;
+            }
 
-                console.log("Filtered records:", filteredRecords);
+            // Get the first record
+            const currentRecord = data[currentIndex];
 
-                if (filteredRecords.length === 0) {
-                    alert(`No records found for mobile number: ${currentMobileNumber}`);
-                    return;
-                }
+            if (currentRecord) {
+                populateHeader(currentRecord);
+                populateTable([currentRecord]);
 
-                // Populate the header and table
-                populateHeader(filteredRecords[0]);
-                populateTable(filteredRecords);
-            })
-            .catch((error) => {
-                console.error("Error loading or filtering data:", error);
-            });
-    }
+                // Save mobile number for next processing
+                localStorage.setItem('currentMobileNumber', currentRecord["Mobile_Number"]);
+            }
+        })
+        .catch(error => console.error('Error loading data:', error));
+}
 
-    function populateHeader(record) {
-        const basicInfoElement = document.getElementById("basic-info");
+// Populate the basic info section with mobile number, name, and email
+function populateHeader(record) {
+    const basicInfoElement = document.getElementById('basic-info');
+    basicInfoElement.innerHTML = `
+        <strong>Mobile Number:</strong> ${record["Mobile_Number"]}<br>
+        <strong>Name:</strong> ${record["Name"] || "N/A"}<br>
+        <strong>Email:</strong> ${record["Email"] || "N/A"}<br>
+    `;
+}
 
-        if (!basicInfoElement) {
-            console.error("Basic info element not found.");
-            return;
-        }
+// Populate the table with the record's details
+function populateTable(records) {
+    const tableBody = document.getElementById('data-table-body');
+    tableBody.innerHTML = ''; // Clear existing rows
 
-        // Clear existing content
-        basicInfoElement.innerHTML = "";
-
-        // Create and populate the content dynamically
-        basicInfoElement.innerHTML = `
-            <strong>Mobile Number:</strong> ${record["Mobile_Number"] || "N/A"}<br>
-            <strong>Name:</strong> ${record["Name"] || "N/A"}<br>
-            <strong>Email:</strong> ${record["Email"] || "N/A"}<br>
+    records.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${record["Sr_No"]}</td>
+            <td>${convertExcelDate(record["Time_of_Entry"])}</td>
+            <td>${record["Hotel"] || "N/A"}</td>
+            <td>${record["Area"] || "N/A"}</td>
+            <td>${record["City"] || "N/A"}</td>
+            <td>${record["State"] || "N/A"}</td>
+            <td>${record["Requirement Mentioned"] || "N/A"}</td>
+            <td>${record["Search Time"] || "N/A"}</td>
         `;
-    }
+        tableBody.appendChild(row);
+    });
+}
 
-    function populateTable(records) {
-        const tableBody = document.getElementById("data-table-body");
+// Convert Excel date to readable date format
+function convertExcelDate(excelDate) {
+    const date = new Date((excelDate - 25569) * 86400 * 1000);
+    return date.toLocaleString("en-GB", { timeZone: "Asia/Kolkata" });
+}
 
-        if (!tableBody) {
-            console.error("Table body element not found.");
-            return;
-        }
-
-        tableBody.innerHTML = ""; // Clear existing rows
-
-        if (records.length === 0) {
-            const row = document.createElement("tr");
-            row.innerHTML = `<td colspan="8">No records available for the selected mobile number.</td>`;
-            tableBody.appendChild(row);
-            return;
-        }
-
-        records.forEach((record) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${record["Sr_No"] || "N/A"}</td>
-                <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
-                <td>${record["Hotel"] || "N/A"}</td>
-                <td>${record["Area"] || "N/A"}</td>
-                <td>${record["City"] || "N/A"}</td>
-                <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement Mentioned"] || "N/A"}</td>
-                <td>${record["Search Time"] || "N/A"}</td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function convertExcelDate(excelDate) {
-        const date = new Date((excelDate - 25569) * 86400 * 1000);
-        return date.toLocaleString("en-GB", { timeZone: "Asia/Kolkata" });
-    }
-
-    const currentMobileNumber = "9082175513"; // Update with the actual mobile number
-    loadAndFilterData(currentMobileNumber);
+// Call the loadNextRecord function when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadNextRecord();
 });
