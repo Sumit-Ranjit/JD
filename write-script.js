@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function () {
     // Load data from Data.json and display it
     try {
-        const response = await fetch('Data.json');
+        const response = await fetch('./Data.json');
         const data = await response.json();
 
         // Display Mobile Number, Name, and Email
