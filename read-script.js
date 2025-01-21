@@ -1,59 +1,75 @@
 document.addEventListener("DOMContentLoaded", () => {
     const dataUrl = "./Data.json"; // Path to your Data.json file
-    const mobileNumberField = document.getElementById("mobileNumber");
-    const nameField = document.getElementById("name");
-    const emailField = document.getElementById("email");
     const tableBody = document.querySelector("#data-table tbody");
 
-    if (!mobileNumberField || !nameField || !emailField || !tableBody) {
-        console.error("HTML elements with required IDs are missing.");
-        return;
-    }
-
-    const currentMobileNumber = localStorage.getItem('currentMobileNumber'); // Get current mobile number
-    if (!currentMobileNumber) {
-        alert("No mobile number found to display records.");
+    if (!tableBody) {
+        console.error("Table body element is missing.");
         return;
     }
 
     fetch(dataUrl)
         .then((response) => response.json())
         .then((data) => {
-            // Filter records for the current mobile number
-            const records = data.filter((entry) => entry.Mobile_Number === currentMobileNumber);
+            // Save all data to local storage
+            localStorage.setItem('allData', JSON.stringify(data));
+            console.log("Data loaded into local storage.");
 
-            if (records.length > 0) {
-                // Populate Basic Info with the first matching record
-                const firstRecord = records[0];
-                mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
-                nameField.textContent = firstRecord.Name || "N/A";
-                emailField.textContent = firstRecord.Email || "N/A";
-
-                // Populate the table with all matching records
-                tableBody.innerHTML = ""; // Clear previous rows
-                records.forEach((record, index) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
-                        <td>${record["Hotel"] || "N/A"}</td>
-                        <td>${record["Area"] || "N/A"}</td>
-                        <td>${record["City"] || "N/A"}</td>
-                        <td>${record["State"] || "N/A"}</td>
-                        <td>${record["Requirement Mentioned"] || "N/A"}</td>
-                        <td>${record["Search Time"] || "N/A"}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                console.warn("No records found for the specified mobile number.");
-                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
-            }
+            // Load records for the current mobile number
+            loadRecordsForCurrentMobileNumber();
         })
         .catch((error) => {
-            console.error("Error loading or filtering data:", error);
-            tableBody.innerHTML = `<tr><td colspan="8">Error loading data</td></tr>`;
+            console.error("Error loading data:", error);
         });
+
+    function loadRecordsForCurrentMobileNumber() {
+        const allData = JSON.parse(localStorage.getItem('allData')) || [];
+        const currentMobileNumber = localStorage.getItem('currentMobileNumber');
+
+        if (!currentMobileNumber) {
+            alert("No mobile number found to display records.");
+            return;
+        }
+
+        const matchingRecords = allData.filter(
+            (record) => record.Mobile_Number === currentMobileNumber
+        );
+
+        if (matchingRecords.length > 0) {
+            populateTableAndInfo(matchingRecords);
+        } else {
+            console.warn("No records found for the specified mobile number.");
+            tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+        }
+    }
+
+    function populateTableAndInfo(records) {
+        // Populate Basic Info
+        const mobileNumberField = document.getElementById("mobileNumber");
+        const nameField = document.getElementById("name");
+        const emailField = document.getElementById("email");
+
+        const firstRecord = records[0];
+        mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
+        nameField.textContent = firstRecord.Name || "N/A";
+        emailField.textContent = firstRecord.Email || "N/A";
+
+        // Populate Table
+        tableBody.innerHTML = ""; // Clear previous rows
+        records.forEach((record, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
+                <td>${record["Hotel"] || "N/A"}</td>
+                <td>${record["Area"] || "N/A"}</td>
+                <td>${record["City"] || "N/A"}</td>
+                <td>${record["State"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
 
     // Convert Excel date to readable format
     function convertExcelDate(excelDate) {
