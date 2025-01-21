@@ -3,6 +3,7 @@ window.onload = () => {
     const storeName = "user_data_store";
     const dataUrl = "./Data.json"; // Path to your Data.json file
 
+    const request = indexedDB.open(dbName, 1);
     // Open IndexedDB
     request.onsuccess = function (event) {
         const db = event.target.result;
@@ -37,7 +38,6 @@ window.onload = () => {
                 console.error("Error loading Data.json:", error);
             });
     };
-    const request = indexedDB.open(dbName, 1);
 
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
