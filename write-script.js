@@ -1,187 +1,146 @@
-document.addEventListener('DOMContentLoaded', async function () {
-    // Load data from Data.json and display it
-    try {
-        const response = await fetch('./Data.json');
-        const data = await response.json();
+document.addEventListener("DOMContentLoaded", () => {
+    const mobileNumberElement = document.getElementById("mobileNumber");
+    const nameElement = document.getElementById("name");
+    const emailElement = document.getElementById("email");
+    const tableContainer = document.getElementById("tableContainer");
+    const updateDataButton = document.getElementById("updateDataButton");
 
-        // Display Mobile Number, Name, and Email
-        const mobileNumberEl = document.getElementById('mobileNumber');
-        const nameEl = document.getElementById('name');
-        const emailEl = document.getElementById('email');
+    // Load data from Data.json
+    fetch('./Data.json')
+        .then(response => response.json())
+        .then(data => {
+            // Display the first record (for simplicity)
+            const firstRecord = data.find(record => record.Mobile_Number);
+            if (firstRecord) {
+                mobileNumberElement.textContent = firstRecord.Mobile_Number;
+                nameElement.textContent = firstRecord.Name;
+                emailElement.textContent = firstRecord.Email;
 
-        if (data.length > 0) {
-            const firstRecord = data[0];
-            mobileNumberEl.innerText = firstRecord.Mobile_Number || 'N/A';
-            nameEl.innerText = firstRecord.Name || 'N/A';
-            emailEl.innerText = firstRecord.Email || 'N/A';
+                // Filter records by Mobile_Number
+                const filteredRecords = data.filter(
+                    record => record.Mobile_Number === firstRecord.Mobile_Number
+                );
 
-            // Populate the table with records of the same mobile number
-            const tableContainer = document.getElementById('tableContainer');
-            tableContainer.innerHTML = ''; // Clear previous data
+                // Create table
+                const table = document.createElement("table");
+                const thead = document.createElement("thead");
+                const tbody = document.createElement("tbody");
 
-            const table = document.createElement('table');
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Sr No</th>
-                        <th>Time of Entry</th>
-                        <th>Hotel</th>
-                        <th>Area</th>
-                        <th>City</th>
-                        <th>State</th>
-                        <th>Requirement Mentioned</th>
-                        <th>Search Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            `;
+                // Define headers
+                const headers = [
+                    "Sr No",
+                    "Time of Entry",
+                    "Hotel",
+                    "Area",
+                    "City",
+                    "State",
+                    "Requirement Mentioned",
+                    "Search Time"
+                ];
+                const headerRow = document.createElement("tr");
+                headers.forEach(header => {
+                    const th = document.createElement("th");
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
 
-            const tbody = table.querySelector('tbody');
+                // Populate rows
+                filteredRecords.forEach(record => {
+                    const row = document.createElement("tr");
+                    headers.forEach(key => {
+                        const td = document.createElement("td");
+                        td.textContent = record[key] || "";
+                        row.appendChild(td);
+                    });
+                    tbody.appendChild(row);
+                });
 
-            // Filter records by the same mobile number
-            const filteredRecords = data.filter(record => record.Mobile_Number === firstRecord.Mobile_Number);
-
-            filteredRecords.forEach(record => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${record["Sr No"]}</td>
-                    <td>${convertExcelDateToJSDate(record["Time_of_Entry"])}</td>
-                    <td>${record["Hotel"]}</td>
-                    <td>${record["Area"]}</td>
-                    <td>${record["City"]}</td>
-                    <td>${record["State"]}</td>
-                    <td>${record["Requirement Mentioned"]}</td>
-                    <td>${record["Search Time"]}</td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            tableContainer.appendChild(table);
-        } else {
-            alert("No data found in Data.json.");
-        }
-    } catch (error) {
-        console.error("Error loading Data.json:", error);
-    }
-});
-
-// Function to convert Excel datetime to readable format
-function convertExcelDateToJSDate(excelDate) {
-    if (!excelDate) return 'N/A';
-    const jsDate = new Date((excelDate - 25569) * 86400 * 1000);
-    return jsDate.toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' }); // Format: DD/MM/YYYY HH:mm:ss
-}
-
-// Handle form submission for write section
-document.getElementById("updateDataButton").addEventListener("click", async () => {
-    try {
-        const response = await fetch('./Data.json');
-        const data = await response.json();
-
-        // Get form data
-        const formData = getWriteFormData(); // Function to get data from write form
-
-        if (!formData) {
-            alert("Please fill in all required fields.");
-            return;
-        }
-
-        // Get the mobile number from the read section
-        const mobileNumber = document.getElementById("mobileNumber").innerText.trim();
-
-        // Find all entries with the current mobile number
-        const matchingRecords = data.filter(record => record.Mobile_Number === mobileNumber);
-
-        if (matchingRecords.length === 0) {
-            alert("No records found for the current mobile number.");
-            return;
-        }
-
-        // Remove matching records from Data.json
-        const updatedData = data.filter(record => record.Mobile_Number !== mobileNumber);
-
-        // Append the updated form data to Write-Record.json
-        matchingRecords.forEach(record => {
-            formData["Sr No"] = record["Sr No"];
-            formData["Time of Entry"] = record["Time_of_Entry"];
-            formData["Mobile_Number"] = record["Mobile_Number"];
-            formData["Name"] = record["Name"];
-            formData["Email"] = record["Email"];
-            formData["Area"] = record["Area"];
-            formData["Hotel"] = record["Hotel"];
-            formData["City"] = record["City"];
-            formData["State"] = record["State"];
-            formData["Requirement Mentioned"] = record["Requirement Mentioned"];
-            formData["Search Time"] = record["Search Time"];
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                tableContainer.innerHTML = ""; // Clear previous content
+                tableContainer.appendChild(table);
+            }
         });
 
-        // Save updated data back to Data.json
-        await writeJSONFile("Data.json", updatedData);
+    // Update data
+    updateDataButton.addEventListener("click", () => {
+        // Gather write section data
+        const writeData = {
+            Call_Connected: document.getElementById("callConnected").value,
+            Intent_of_Call: document.getElementById("intentOfCall").value,
+            Remarks_if_Others: document.getElementById("remarksIfOthers").value,
+            Booking_ID: document.getElementById("bookingId").value,
+            Booking_Created: document.getElementById("bookingCreated").value,
+            Check_In_Date: document.getElementById("checkInDate").value,
+            Check_Out_Date: document.getElementById("checkOutDate").value,
+            No_of_Rooms: document.getElementById("noOfRooms").value,
+            Prepay_Pitched: document.getElementById("prepayPitched").value,
+            Prepay_Collected: document.getElementById("prepayCollected").value,
+            Reason_of_Non_Prepay: document.getElementById("reasonOfNonPrepay").value,
+            Agent_Remarks: document.getElementById("agentRemarks").value,
+            Status: document.getElementById("status").value
+        };
 
-        // Append new data to Write-Record.json
-        const writeRecordData = await readJSONFile("Write-Record.json") || [];
-        writeRecordData.push(...matchingRecords);
-        await writeJSONFile("Write-Record.json", writeRecordData);
+        // Fetch data from Data.json
+        fetch('./Data.json')
+            .then(response => response.json())
+            .then(data => {
+                // Filter records to exclude current mobile number
+                const mobileNumber = mobileNumberElement.textContent;
+                const updatedRecords = data.filter(
+                    record => record.Mobile_Number !== mobileNumber
+                );
 
-        alert("Data updated successfully.");
-    } catch (error) {
-        console.error("Error updating data:", error);
-        alert("Failed to update data. Check the console for more details.");
-    }
-});
+                // Add new record to Write-Record.json
+                const writeRecords = data.filter(
+                    record => record.Mobile_Number === mobileNumber
+                ).map(record => ({
+                    ...record,
+                    ...writeData
+                }));
 
-// Helper: Get data from the write form
-function getWriteFormData() {
-    const formData = {
-        "Call Connected": document.getElementById("callConnected").value,
-        "Intent of Call": document.getElementById("intentOfCall").value,
-        "Remarks if Others": document.getElementById("remarksIfOthers").value,
-        "Booking ID": document.getElementById("bookingId").value,
-        "Booking Created or Not": document.getElementById("bookingCreated").value,
-        "Check-In Date": document.getElementById("checkInDate").value,
-        "Check-Out Date": document.getElementById("checkOutDate").value,
-        "Number of Rooms": document.getElementById("noOfRooms").value,
-        "Prepay Pitched": document.getElementById("prepayPitched").value,
-        "Prepay Collected": document.getElementById("prepayCollected").value,
-        "Reason for Non-Prepay": document.getElementById("reasonOfNonPrepay").value,
-        "Agent Remarks": document.getElementById("agentRemarks").value,
-        "Status": document.getElementById("status").value
-    };
+                // Update Write-Record.json
+                fetch('./Write-Record.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(writeRecords, null, 2)
+                })
+                    .then(() => {
+                        console.log('Data written successfully to Write-Record.json');
+                    })
+                    .catch(err => console.error('Error writing to Write-Record.json:', err));
 
-    // Validation
-    for (const key in formData) {
-        if (!formData[key] && key !== "Remarks if Others") {
-            return null; // Missing required field
+                // Update Data.json
+                fetch('./Data.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedRecords, null, 2)
+                })
+                    .then(() => {
+                        console.log('Data.json updated successfully.');
+                        alert('Data updated successfully!');
+                    })
+                    .catch(err => console.error('Error updating Data.json:', err));
+            });
+    });
+
+    // Show or hide "Remarks if Others"
+    const intentOfCallElement = document.getElementById("intentOfCall");
+    const remarksIfOthersElement = document.getElementById("remarksIfOthers");
+    const remarksIfOthersLabel = document.getElementById("remarksIfOthersLabel");
+
+    intentOfCallElement.addEventListener("change", () => {
+        if (intentOfCallElement.value === "Others") {
+            remarksIfOthersElement.style.display = "block";
+            remarksIfOthersLabel.style.display = "block";
+        } else {
+            remarksIfOthersElement.style.display = "none";
+            remarksIfOthersLabel.style.display = "none";
         }
-    }
-
-    if (formData["Intent of Call"] === "Others" && !formData["Remarks if Others"]) {
-        alert("Remarks are required if 'Intent of Call' is 'Others'.");
-        return null;
-    }
-
-    return formData;
-}
-
-// Helper: Write JSON to file
-async function writeJSONFile(filename, jsonData) {
-    const handle = await window.showSaveFilePicker({
-        suggestedName: filename,
-        types: [{ description: "JSON Files", accept: { "application/json": [".json"] } }]
     });
-    const writable = await handle.createWritable();
-    await writable.write(JSON.stringify(jsonData, null, 2));
-    await writable.close();
-}
-
-// Helper: Read JSON from file
-async function readJSONFile(filename) {
-    const handle = await window.showOpenFilePicker({
-        suggestedName: filename,
-        types: [{ description: "JSON Files", accept: { "application/json": [".json"] } }]
-    });
-    const file = await handle[0].getFile();
-    const contents = await file.text();
-    return JSON.parse(contents);
-}
+});
