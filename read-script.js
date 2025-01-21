@@ -1,50 +1,55 @@
-document.addEventListener("DOMContentLoaded", () => {
-    fetch("./Data.json")
+// Read Data.json and filter for current mobile number
+function loadAndFilterData(currentMobileNumber) {
+    fetch("Data.json")
         .then((response) => {
             if (!response.ok) {
-                throw new Error("Failed to fetch data");
+                throw new Error("Failed to load Data.json");
             }
             return response.json();
         })
         .then((data) => {
-            displayData(data);
+            // Filter records by current mobile number
+            const filteredRecords = data.filter(
+                (record) => record["Mobile_Number"] === currentMobileNumber
+            );
+
+            // Update the table with filtered records
+            populateTable(filteredRecords);
         })
         .catch((error) => {
-            console.error("Error fetching data:", error);
+            console.error("Error loading or filtering data:", error);
         });
-});
+}
 
-function displayData(data) {
-    const mobileNumber = data[0].Mobile_Number || "N/A";
-    const name = data[0].Name || "N/A";
-    const email = data[0].Email || "N/A";
+// Function to populate the table
+function populateTable(records) {
+    const tableBody = document.getElementById("data-table-body");
+    tableBody.innerHTML = ""; // Clear previous rows
 
-    document.getElementById("mobile-number").textContent = mobileNumber;
-    document.getElementById("name").textContent = name;
-    document.getElementById("email").textContent = email;
-
-    const tableBody = document.querySelector("#record-table tbody");
-    tableBody.innerHTML = ""; // Clear any existing rows
-
-    data.forEach((record) => {
+    records.forEach((record) => {
         const row = document.createElement("tr");
 
         row.innerHTML = `
             <td>${record["Sr No"]}</td>
             <td>${convertExcelDate(record["Time_of_Entry"])}</td>
-            <td>${record.Hotel}</td>
-            <td>${record.Area}</td>
-            <td>${record.City}</td>
-            <td>${record.State}</td>
+            <td>${record["Hotel"]}</td>
+            <td>${record["Area"]}</td>
+            <td>${record["City"]}</td>
+            <td>${record["State"]}</td>
             <td>${record["Requirement Mentioned"]}</td>
             <td>${record["Search Time"]}</td>
         `;
+
         tableBody.appendChild(row);
     });
 }
 
+// Function to convert Excel date format to DD/MM/YYYY HH:mm:ss
 function convertExcelDate(excelDate) {
-    const excelEpoch = new Date(1899, 11, 30).getTime();
-    const milliseconds = (excelDate - 1) * 86400000; // Excel date to milliseconds
-    return new Date(excelEpoch + milliseconds).toLocaleString();
+    const date = new Date((excelDate - 25569) * 86400 * 1000); // Convert to JavaScript date
+    return date.toLocaleString("en-GB", { timeZone: "Asia/Kolkata" }); // Format as DD/MM/YYYY HH:mm:ss
 }
+
+// Call the function with the mobile number of the current record
+const currentMobileNumber = "9082175513"; // Replace with dynamic mobile number if necessary
+loadAndFilterData(currentMobileNumber);
