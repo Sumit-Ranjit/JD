@@ -1,75 +1,156 @@
-<div id="readSection">
-    <h2>Read Section</h2>
-    <div id="mobileDetails">
-        <p>Mobile Number: <span id="mobileNumber"></span></p>
-        <p>Name: <span id="name"></span></p>
-        <p>Email: <span id="email"></span></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Management</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        input, select, textarea, button {
+            display: block;
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            width: auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #remarksSection {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Record Management</h1>
+    
+    <!-- Read Section -->
+    <div id="readSection">
+        <h2>Read Section</h2>
+        
+        <div id="mobileDetails">
+            <p>Mobile Number: <span id="mobileNumber"></span></p>
+            <p>Name: <span id="name"></span></p>
+            <p>Email: <span id="email"></span></p>
+        </div>
+        
+        <div id="tableContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>Time of Entry</th>
+                        <th>Hotel</th>
+                        <th>Area</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Requirement Mentioned</th>
+                        <th>Search Time</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTable">
+                    <!-- Dynamic rows will be added here -->
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div id="tableContainer"></div>
-</div>
 
-<div id="writeSection">
-    <h2>Write Section</h2>
-    <label for="callConnected">Call Connected:</label>
-    <select id="callConnected">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
+    <!-- Write Section -->
+    <div id="writeSection">
+        <h2>Write Section</h2>
+        
+        <label for="callConnected">Call Connected:</label>
+        <select id="callConnected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
-    <label for="intentOfCall">Intent of Call:</label>
-    <select id="intentOfCall">
-        <option value="Sales">Sales</option>
-        <option value="Service">Service</option>
-        <option value="Enquiry">Enquiry</option>
-        <option value="Others">Others</option>
-    </select><br>
+        <label for="intentOfCall">Intent of Call:</label>
+        <select id="intentOfCall" onchange="toggleRemarksSection()">
+            <option value="Sales">Sales</option>
+            <option value="Service">Service</option>
+            <option value="Enquiry">Enquiry</option>
+            <option value="Others">Others</option>
+        </select>
+        
+        <div id="remarksSection" style="display:none;">
+            <label for="remarksIfOthers">Remarks if Others:</label>
+            <textarea id="remarksIfOthers"></textarea>
+        </div>
 
-    <div id="remarksSection" style="display:none;">
-        <label for="remarksIfOthers">Remarks if Others:</label>
-        <textarea id="remarksIfOthers"></textarea><br>
+        <label for="bookingId">Booking ID:</label>
+        <input type="text" id="bookingId">
+
+        <label for="bookingCreated">Booking Created:</label>
+        <select id="bookingCreated">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label for="checkInDate">Check-In Date:</label>
+        <input type="date" id="checkInDate">
+
+        <label for="checkOutDate">Check-Out Date:</label>
+        <input type="date" id="checkOutDate">
+
+        <label for="noOfRooms">No of Rooms:</label>
+        <input type="number" id="noOfRooms">
+
+        <label for="prepayPitched">Prepay Pitched:</label>
+        <select id="prepayPitched">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label for="prepayCollected">Prepay Collected:</label>
+        <select id="prepayCollected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label for="reasonOfNonPrepay">Reason of Non-Prepay:</label>
+        <input type="text" id="reasonOfNonPrepay">
+
+        <label for="agentRemarks">Agent Remarks:</label>
+        <textarea id="agentRemarks"></textarea>
+
+        <label for="status">Status:</label>
+        <select id="status">
+            <option value="Done">Done</option>
+            
+        </select>
+
+        <button id="updateDataButton">Update Data</button>
     </div>
 
-    <label for="bookingId">Booking ID:</label>
-    <input type="text" id="bookingId"><br>
-
-    <label for="bookingCreated">Booking Created:</label>
-    <select id="bookingCreated">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
-
-    <label for="checkInDate">Check-In Date:</label>
-    <input type="date" id="checkInDate"><br>
-
-    <label for="checkOutDate">Check-Out Date:</label>
-    <input type="date" id="checkOutDate"><br>
-
-    <label for="noOfRooms">No of Rooms:</label>
-    <input type="number" id="noOfRooms"><br>
-
-    <label for="prepayPitched">Prepay Pitched:</label>
-    <select id="prepayPitched">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
-
-    <label for="prepayCollected">Prepay Collected:</label>
-    <select id="prepayCollected">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
-
-    <label for="reasonOfNonPrepay">Reason of Non-Prepay:</label>
-    <input type="text" id="reasonOfNonPrepay"><br>
-
-    <label for="agentRemarks">Agent Remarks:</label>
-    <textarea id="agentRemarks"></textarea><br>
-
-    <label for="status">Status:</label>
-    <select id="status">
-        <option value="Done">Done</option>
-        <option value="Pending">Pending</option>
-    </select><br>
-
-    <button id="updateDataButton">Update Data</button>
-</div>
+    <script src="write-script.js"></script>
+</body>
+</html>
