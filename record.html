@@ -1,60 +1,105 @@
-<!-- Mobile Number, Name, and Email are displayed dynamically -->
-<div id="basic-info"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Record Management</title>
+    <style>
+        /* Add basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        form {
+            margin-top: 20px;
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Record Management</h1>
 
-<!-- User Input Fields -->
-<form id="user-input-form">
-    <label for="call-connected">Call Connected:</label>
-    <select id="call-connected">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
+    <!-- Basic Information Section -->
+    <div id="basic-info"></div>
 
-    <label for="intent-of-call">Intent of Call:</label>
-    <select id="intent-of-call">
-        <option value="Sales">Sales</option>
-        <option value="Service">Service</option>
-        <option value="Enquiry">Enquiry</option>
-        <option value="Others">Others</option>
-    </select><br>
+    <!-- Data Table Section -->
+    <table>
+        <thead>
+            <tr>
+                <th>Sr No</th>
+                <th>Time of Entry</th>
+                <th>Hotel</th>
+                <th>Area</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Requirement Mentioned</th>
+                <th>Search Time</th>
+            </tr>
+        </thead>
+        <tbody id="data-table-body"></tbody>
+    </table>
 
-    <label for="remarks-if-others">Remarks if Others:</label>
-    <input type="text" id="remarks-if-others" placeholder="Enter remarks for 'Others'"><br>
+    <!-- User Input Form Section -->
+    <form id="user-input-form">
+        <label for="call-connected">Call Connected:</label>
+        <select id="call-connected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
-    <!-- Additional fields for booking information -->
-    <label for="booking-id">Booking ID:</label>
-    <input type="text" id="booking-id" placeholder="Enter Booking ID"><br>
+        <label for="intent-of-call">Intent of Call:</label>
+        <select id="intent-of-call">
+            <option value="Sales">Sales</option>
+            <option value="Service">Service</option>
+            <option value="Enquiry">Enquiry</option>
+            <option value="Others">Others</option>
+        </select>
 
-    <label for="booking-created">Booking Created:</label>
-    <select id="booking-created">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
+        <label for="remarks-if-others">Remarks if Others:</label>
+        <input type="text" id="remarks-if-others" placeholder="Enter remarks for 'Others'">
 
-    <label for="prepay-collected">Prepay Collected:</label>
-    <select id="prepay-collected">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-    </select><br>
+        <label for="booking-id">Booking ID:</label>
+        <input type="text" id="booking-id" placeholder="Enter Booking ID">
 
-    <label for="agent-remarks">Agent Remarks:</label><br>
-    <textarea id="agent-remarks" rows="4" cols="50" placeholder="Enter agent remarks"></textarea><br>
+        <label for="booking-created">Booking Created:</label>
+        <select id="booking-created">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
-    <button type="submit" id="submit-btn">Submit</button>
-</form>
+        <label for="prepay-collected">Prepay Collected:</label>
+        <select id="prepay-collected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
-<!-- Displaying Table of Data for Mobile Number -->
-<table>
-    <thead>
-        <tr>
-            <th>Sr No</th>
-            <th>Time of Entry</th>
-            <th>Hotel</th>
-            <th>Area</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Requirement Mentioned</th>
-            <th>Search Time</th>
-        </tr>
-    </thead>
-    <tbody id="data-table-body"></tbody>
-</table>
+        <label for="agent-remarks">Agent Remarks:</label>
+        <textarea id="agent-remarks" rows="4" cols="50" placeholder="Enter agent remarks"></textarea>
+
+        <button type="submit" id="submit-btn">Submit</button>
+    </form>
+
+    <!-- Linking the JavaScript Files -->
+    <script src="read-script.js"></script>
+    <script src="write-script.js"></script>
+</body>
+</html>
