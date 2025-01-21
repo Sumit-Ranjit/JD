@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
     const dbName = "user_data_db";
     const storeName = "user_data_store";
     const dataUrl = "./Data.json"; // Path to your Data.json file
@@ -45,4 +45,4 @@ document.addEventListener("DOMContentLoaded", () => {
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
-});
+}
