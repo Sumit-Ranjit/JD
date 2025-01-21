@@ -5,24 +5,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const emailField = document.getElementById("email");
     const tableBody = document.querySelector("#data-table tbody");
 
-    // Fetch and process the JSON data
+    if (!mobileNumberField || !nameField || !emailField || !tableBody) {
+        console.error("HTML elements with required IDs are missing.");
+        return;
+    }
+
     fetch(dataUrl)
         .then((response) => response.json())
         .then((data) => {
-            const records = data.filter(entry => entry.Mobile_Number === "9082175513"); // Example mobile number
+            const mobileNumberToSearch = "9082175513"; // Replace with dynamic logic later
+            const records = data.filter(
+                (entry) => entry.Mobile_Number === mobileNumberToSearch
+            );
 
             if (records.length > 0) {
-                // Populate Basic Info (First matching record)
+                // Populate Basic Info
                 const firstRecord = records[0];
                 mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
                 nameField.textContent = firstRecord.Name || "N/A";
                 emailField.textContent = firstRecord.Email || "N/A";
 
-                // Populate Table with all matching records
+                // Populate Table
                 tableBody.innerHTML = ""; // Clear previous rows
-                records.forEach(record => {
+                records.forEach((record) => {
                     const row = document.createElement("tr");
-
                     row.innerHTML = `
                         <td>${record["Sr_No"] || "N/A"}</td>
                         <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
@@ -36,10 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     tableBody.appendChild(row);
                 });
             } else {
-                // No matching records found
-                mobileNumberField.textContent = "N/A";
-                nameField.textContent = "N/A";
-                emailField.textContent = "N/A";
+                console.warn("No records found for the specified mobile number.");
                 tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
             }
         })
@@ -48,10 +51,10 @@ document.addEventListener("DOMContentLoaded", () => {
             tableBody.innerHTML = `<tr><td colspan="8">Error loading data</td></tr>`;
         });
 
-    // Function to convert Excel date to readable format
+    // Convert Excel date to readable format
     function convertExcelDate(excelDate) {
         if (!excelDate) return null;
-        const date = new Date((excelDate - 25569) * 86400 * 1000); // Convert from Excel date to JS date
-        return date.toLocaleString(); // Format as local date and time
+        const date = new Date((excelDate - 25569) * 86400 * 1000); // Convert Excel date to JS date
+        return date.toLocaleString(); // Format date to local string
     }
 });
