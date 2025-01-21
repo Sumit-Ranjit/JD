@@ -4,6 +4,39 @@ window.onload = () => {
     const dataUrl = "./Data.json"; // Path to your Data.json file
 
     // Open IndexedDB
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+
+        // Fetch the data from Data.json
+        fetch(dataUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                const transaction = db.transaction(storeName, "readwrite");
+                const store = transaction.objectStore(storeName);
+
+                // Add each record to the object store
+                data.forEach((record) => {
+                    const getRequest = store.get(record.Mobile_Number);
+                    getRequest.onsuccess = function () {
+                        store.put(record); // Overwrite if key exists
+                    };
+                    getRequest.onerror = function (event) {
+                        console.error("Error fetching record:", event.target.error);
+                    };
+                });
+
+                transaction.oncomplete = function () {
+                    console.log("Data successfully loaded into IndexedDB.");
+                };
+
+                transaction.onerror = function (event) {
+                    console.error("Transaction failed:", event.target.error);
+                };
+            })
+            .catch((error) => {
+                console.error("Error loading Data.json:", error);
+            });
+    };
     const request = indexedDB.open(dbName, 1);
 
     request.onupgradeneeded = function (event) {
