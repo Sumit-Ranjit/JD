@@ -1,83 +1,60 @@
-// Function to load and filter data for the current mobile number
-async function loadAndDisplayData() {
-    const currentMobileNumber = localStorage.getItem('currentMobileNumber'); // Get mobile number dynamically
-    if (!currentMobileNumber) {
-        alert("No mobile number set. Please start processing from the first record.");
+document.addEventListener("DOMContentLoaded", () => {
+    const dataUrl = "./Data.json"; // Path to your Data.json file
+    const mobileNumberField = document.getElementById("mobileNumber");
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
+    const tableBody = document.querySelector("#data-table tbody");
+
+    if (!mobileNumberField || !nameField || !emailField || !tableBody) {
+        console.error("HTML elements with required IDs are missing.");
         return;
     }
 
-    try {
-        const response = await fetch('Data.json'); // Load data from Data.json
-        const data = await response.json();
+    fetch(dataUrl)
+        .then((response) => response.json())
+        .then((data) => {
+            const mobileNumberToSearch = "9082175513"; // Replace with dynamic logic later
+            const records = data.filter(
+                (entry) => entry.Mobile_Number === mobileNumberToSearch
+            );
 
-        // Filter records by current mobile number
-        const filteredRecords = data.filter(record => record.Mobile_Number === currentMobileNumber);
+            if (records.length > 0) {
+                // Populate Basic Info
+                const firstRecord = records[0];
+                mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
+                nameField.textContent = firstRecord.Name || "N/A";
+                emailField.textContent = firstRecord.Email || "N/A";
 
-        if (filteredRecords.length === 0) {
-            alert(`No more records found for mobile number: ${currentMobileNumber}`);
-            // Optionally clear the currentMobileNumber in localStorage
-            localStorage.removeItem('currentMobileNumber');
-            return;
-        }
-
-        // Populate basic info section
-        const basicInfoDiv = document.getElementById('basic-info');
-        const firstRecord = filteredRecords[0]; // Assuming at least one record exists
-        basicInfoDiv.querySelector('#mobile-number').textContent = firstRecord.Mobile_Number || "N/A";
-        basicInfoDiv.querySelector('#email').textContent = firstRecord.Email || "N/A";
-        basicInfoDiv.querySelector('#name').textContent = firstRecord.Name || "N/A";
-
-        // Populate table with all records for this mobile number
-        const tableBody = document.getElementById('data-table').querySelector('tbody');
-        tableBody.innerHTML = ''; // Clear existing rows
-
-        filteredRecords.forEach((record, index) => {
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${record.Time_of_Entry || "N/A"}</td>
-                <td>${record.Hotel || "N/A"}</td>
-                <td>${record.Area || "N/A"}</td>
-                <td>${record.City || "N/A"}</td>
-                <td>${record.State || "N/A"}</td>
-                <td>${record.Requirement_Mentioned || "N/A"}</td>
-                <td>${record.Search_Time || "N/A"}</td>
-            `;
-
-            tableBody.appendChild(row);
+                // Populate Table
+                tableBody.innerHTML = ""; // Clear previous rows
+                records.forEach((record) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${record["Sr_No"] || "N/A"}</td>
+                        <td>${convertExcelDate(record["Time_of_Entry"]) || "N/A"}</td>
+                        <td>${record["Hotel"] || "N/A"}</td>
+                        <td>${record["Area"] || "N/A"}</td>
+                        <td>${record["City"] || "N/A"}</td>
+                        <td>${record["State"] || "N/A"}</td>
+                        <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                        <td>${record["Search Time"] || "N/A"}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                console.warn("No records found for the specified mobile number.");
+                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+            }
+        })
+        .catch((error) => {
+            console.error("Error loading or filtering data:", error);
+            tableBody.innerHTML = `<tr><td colspan="8">Error loading data</td></tr>`;
         });
 
-        console.log("Data loaded and displayed successfully.");
-    } catch (error) {
-        console.error("Error loading or filtering data:", error);
+    // Convert Excel date to readable format
+    function convertExcelDate(excelDate) {
+        if (!excelDate) return null;
+        const date = new Date((excelDate - 25569) * 86400 * 1000); // Convert Excel date to JS date
+        return date.toLocaleString(); // Format date to local string
     }
-}
-
-// Function to set the next mobile number dynamically
-async function setNextMobileNumber() {
-    try {
-        const response = await fetch('Data.json');
-        const data = await response.json();
-
-        // Find the next unprocessed mobile number
-        const nextRecord = data.find(record => record.Mobile_Number !== localStorage.getItem('currentMobileNumber'));
-
-        if (!nextRecord) {
-            alert("No more mobile numbers to process.");
-            localStorage.removeItem('currentMobileNumber'); // Clear current mobile number
-            return;
-        }
-
-        // Update the current mobile number in localStorage
-        localStorage.setItem('currentMobileNumber', nextRecord.Mobile_Number);
-        loadAndDisplayData(); // Reload data for the new mobile number
-    } catch (error) {
-        console.error("Error setting next mobile number:", error);
-    }
-}
-
-// Load data on page load
-document.addEventListener('DOMContentLoaded', loadAndDisplayData);
-
-// Example usage: Call setNextMobileNumber() after submitting a record
+});
