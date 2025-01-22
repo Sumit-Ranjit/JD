@@ -98,8 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement_Mentioned"] || "N/A"}</td>
-                <td>${record["Search_Time"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
