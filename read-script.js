@@ -1,55 +1,45 @@
-// read-script.js
+const sqlite3 = require('sqlite3').verbose();
 
-// Function to get data from local storage
-function getDataFromLocalStorage(key) {
-    return JSON.parse(localStorage.getItem(key));
-}
+const db = new sqlite3.Database('./initDB.db');
 
-// Function to find the first record with status 'Not Done'
-function findFirstNotDoneRecord(data) {
-    return data.find(record => record.Status === 'Not Done');
-}
+db.serialize(() => {
+    // Fetch the first record where Status is 'Not Done'
+    db.get("SELECT * FROM initDB WHERE Status = 'Not Done' LIMIT 1", (err, row) => {
+        if (err) {
+            console.error(err.message);
+            return;
+        }
 
-// Function to generate the table
-function generateTable(records) {
-    let table = '<table border="1"><tr><th>Hotel</th><th>Area</th><th>City</th><th>State</th><th>Requirement Mentioned</th><th>Search Time</th></tr>';
-    records.forEach(record => {
-        table += `<tr>
-                    <td>${record.Hotel}</td>
-                    <td>${record.Area}</td>
-                    <td>${record.City}</td>
-                    <td>${record.State}</td>
-                    <td>${record.Requirement_Mentioned}</td>
-                    <td>${record.Search_Time}</td>
-                  </tr>`;
+        if (row) {
+            const mobileNumber = row.Mobile_Number;
+
+            // Fetch all records with the same Mobile_Number
+            db.all("SELECT * FROM initDB WHERE Mobile_Number = ?", [mobileNumber], (err, rows) => {
+                if (err) {
+                    console.error(err.message);
+                    return;
+                }
+
+                if (rows.length > 0) {
+                    // Display Name, Mobile Number, Email as text
+                    console.log(`Name: ${rows[0].Name}`);
+                    console.log(`Mobile Number: ${rows[0].Mobile_Number}`);
+                    console.log(`Email: ${rows[0].Email}`);
+
+                    // Display Hotel, Area, City, State, Requirement Mentioned and Search Time in table
+                    console.log("\nRecords:");
+                    console.log("Hotel\tArea\tCity\tState\tRequirement Mentioned\tSearch Time");
+                    rows.forEach(record => {
+                        console.log(`${record.Hotel}\t${record.Area}\t${record.City}\t${record.State}\t${record.Requirement_Mentioned}\t${record.Search_Time}`);
+                    });
+                } else {
+                    console.log("No records found with the given Mobile Number.");
+                }
+            });
+        } else {
+            console.log("No records found with Status 'Not Done'.");
+        }
     });
-    table += '</table>';
-    return table;
-}
+});
 
-// Main function to execute the script
-function main() {
-    const data = getDataFromLocalStorage('IndexDB');
-    if (!data) {
-        console.log('No data found in local storage');
-        return;
-    }
-
-    const firstNotDoneRecord = findFirstNotDoneRecord(data);
-    if (!firstNotDoneRecord) {
-        console.log('No record with status "Not Done" found');
-        return;
-    }
-
-    const { Mobile_Number, Name, Email } = firstNotDoneRecord;
-    console.log(`Mobile Number: ${Mobile_Number}`);
-    console.log(`Name: ${Name}`);
-    console.log(`Email: ${Email}`);
-
-    const recordsWithSameMobileNumber = data.filter(record => record.Mobile_Number === Mobile_Number);
-    const table = generateTable(recordsWithSameMobileNumber);
-    console.log(table);
-}
-
-// Execute the main function
-main();
+db.close();
