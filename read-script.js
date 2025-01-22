@@ -24,21 +24,25 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function loadRecordsWithSameMobileNumber(db) {
-        const transaction = db.transaction(storeName, "readwrite");
+        const transaction = db.transaction(storeName, "readwrite"); // Open transaction in readwrite mode
         const store = transaction.objectStore(storeName);
 
         let referenceMobileNumber = null; // Placeholder for the mobile number to filter
 
-        // First, fetch the reference mobile number (e.g., the first record with Status: "Not Done")
+        // Fetch the first record with Status: "Not Done"
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
 
             if (cursor) {
                 if (cursor.value.Status === "Not Done") {
                     referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
-                    populateBasicInfo(cursor.value); // Populate basic info for the first matching record
+                    cursor.value.Status = "Working"; // Update the Status field
+                    cursor.update(cursor.value); // Save the updated record back to IndexedDB
+
+                    console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
+                    
+                    populateBasicInfo(cursor.value); // Populate basic info for the selected record
                     fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
-                    updateStatusToWorking(cursor); // Update the status to "Working"
                     return; // Stop further cursor iteration
                 }
                 cursor.continue();
@@ -57,32 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
-        const updateTransaction = db.transaction(storeName, "readwrite");
-        const updateStore = updateTransaction.objectStore(storeName);
-
-        const updateRequest = updateStore.openCursor();
-        updateRequest.onsuccess = function (event) {
-            const cursor = event.target.result;
-
-            if (cursor) {
-            if (cursor.value.Mobile_Number === mobileNumber) {
-                const updatedRecord = cursor.value;
-                updatedRecord.Status = "Working";
-                cursor.update(updatedRecord);
-            }
-            cursor.continue();
-            }
-        };
-
-        function updateStatusToWorking(cursor) {
-            const updatedRecord = cursor.value;
-            updatedRecord.Status = "Working";
-            cursor.update(updatedRecord);
-        };
-
-        updateRequest.onerror = function (event) {
-            console.error("Error updating IndexedDB record:", event.target.error);
-        };
 
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
@@ -125,8 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement Mentioned"] || "N/A"}</td>
-                <td>${record["Search Time"] || "N/A"}</td>
+                <td>${record["Requirement_Mentioned"] || "N/A"}</td>
+                <td>${record["Search_Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
