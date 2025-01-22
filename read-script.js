@@ -17,13 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const db = event.target.result;
         console.log("Database opened successfully.");
 
+        // Check for last saved mobile number
         const lastMobileNumber = localStorage.getItem("currentMobileNumber");
         if (lastMobileNumber) {
             console.log(`Resuming from Mobile Number: ${lastMobileNumber}`);
             fetchAllMatchingRecords(lastMobileNumber, db);
         } else {
             console.log("No previous mobile number found. Starting fresh.");
-            loadRecordsWithSameMobileNumber(db);
+            loadFirstRecordWithNotDoneStatus(db);
         }
     };
 
@@ -31,11 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    function loadRecordsWithSameMobileNumber(db) {
+    function loadFirstRecordWithNotDoneStatus(db) {
         const transaction = db.transaction(storeName, "readwrite");
         const store = transaction.objectStore(storeName);
-
-        let referenceMobileNumber = null;
 
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.log("Processing record:", cursor.value);
 
                 if (cursor.value.Status === "Not Done") {
-                    referenceMobileNumber = cursor.value.Mobile_Number;
+                    const referenceMobileNumber = cursor.value.Mobile_Number;
 
                     // Update the Status field to "Working"
                     cursor.value.Status = "Working";
@@ -52,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     updateRequest.onsuccess = function () {
                         console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-                        localStorage.setItem("currentMobileNumber", referenceMobileNumber); // Save to localStorage
+                        localStorage.setItem("currentMobileNumber", referenceMobileNumber); // Save mobile number
                         populateBasicInfo(cursor.value);
                         fetchAllMatchingRecords(referenceMobileNumber, db);
                     };
@@ -66,12 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor.continue();
             } else {
                 console.warn("No records found with Status: Not Done.");
-                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+                clearUI();
             }
         };
 
         store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB for reference mobile number:", event.target.error);
+            console.error("Error querying IndexedDB:", event.target.error);
         };
     }
 
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     populateTable(records);
                 } else {
                     console.warn("No records found for Mobile Number:", mobileNumber);
-                    tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+                    clearUI();
                 }
             }
         };
@@ -126,5 +125,12 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             tableBody.appendChild(row);
         });
+    }
+
+    function clearUI() {
+        mobileNumberField.textContent = "N/A";
+        nameField.textContent = "N/A";
+        emailField.textContent = "N/A";
+        tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
     }
 });
