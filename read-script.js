@@ -5,8 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const mobileNumberField = document.getElementById("mobileNumber");
     const nameField = document.getElementById("name");
     const emailField = document.getElementById("email");
+    const userInputForm = document.getElementById("user-input-form");
 
-    if (!tableBody || !mobileNumberField || !nameField || !emailField) {
+    if (!tableBody || !mobileNumberField || !nameField || !emailField || !userInputForm) {
         console.error("HTML elements with required IDs are missing.");
         return;
     }
@@ -17,6 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const db = event.target.result;
         console.log("Database opened successfully.");
         loadRecordsWithSameMobileNumber(db);
+
+        // Add event listener for form submission
+        userInputForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            updateRecordInIndexedDB(db);
+        });
     };
 
     request.onerror = function (event) {
@@ -114,9 +121,56 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
                 <td>${record["Requirement Mentioned"] || "N/A"}</td>
-                <td>${record["Search Time"] || "N/A"}</td>
+                <td>${record["Search_Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
+    }
+
+    function updateRecordInIndexedDB(db) {
+        const transaction = db.transaction(storeName, "readwrite");
+        const store = transaction.objectStore(storeName);
+
+        const mobileNumber = mobileNumberField.textContent;
+
+        if (!mobileNumber || mobileNumber === "N/A") {
+            alert("No mobile number selected to update.");
+            return;
+        }
+
+        store.openCursor().onsuccess = function (event) {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                if (cursor.value.Mobile_Number === mobileNumber) {
+                    // Update the record with user input values
+                    cursor.value.Call_Connected = document.getElementById("call-connected").value;
+                    cursor.value.Intent_of_Call = document.getElementById("intent-of-call").value;
+                    cursor.value.Remarks_if_Others = document.getElementById("remarks-if-others").value;
+                    cursor.value.Booking_ID = document.getElementById("booking-id").value;
+                    cursor.value.Booking_Created = document.getElementById("booking-created").value;
+                    cursor.value.Prepay_Collected = document.getElementById("prepay-collected").value;
+                    cursor.value.Agent_Remarks = document.getElementById("agent-remarks").value;
+                    cursor.value.Status = "Completed"; // Mark as completed
+
+                    const updateRequest = cursor.update(cursor.value);
+
+                    updateRequest.onsuccess = function () {
+                        console.log("Record updated successfully:", cursor.value);
+                        alert("Record updated successfully.");
+                    };
+
+                    updateRequest.onerror = function (event) {
+                        console.error("Error updating record:", event.target.error);
+                        alert("Error updating the record. Please try again.");
+                    };
+                }
+                cursor.continue();
+            }
+        };
+
+        store.openCursor().onerror = function (event) {
+            console.error("Error querying IndexedDB for updating records:", event.target.error);
+        };
     }
 });
