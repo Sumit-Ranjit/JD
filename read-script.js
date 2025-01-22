@@ -5,9 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const mobileNumberField = document.getElementById("mobileNumber");
     const nameField = document.getElementById("name");
     const emailField = document.getElementById("email");
-    const userInputForm = document.getElementById("user-input-form");
 
-    if (!tableBody || !mobileNumberField || !nameField || !emailField || !userInputForm) {
+    if (!tableBody || !mobileNumberField || !nameField || !emailField) {
         console.error("HTML elements with required IDs are missing.");
         return;
     }
@@ -17,13 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
     request.onsuccess = function (event) {
         const db = event.target.result;
         console.log("Database opened successfully.");
-        loadRecordsWithSameMobileNumber(db);
 
-        // Add event listener for form submission
-        userInputForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            updateRecordInIndexedDB(db);
-        });
+        const lastMobileNumber = localStorage.getItem("currentMobileNumber");
+        if (lastMobileNumber) {
+            console.log(`Resuming from Mobile Number: ${lastMobileNumber}`);
+            fetchAllMatchingRecords(lastMobileNumber, db);
+        } else {
+            console.log("No previous mobile number found. Starting fresh.");
+            loadRecordsWithSameMobileNumber(db);
+        }
     };
 
     request.onerror = function (event) {
@@ -31,36 +32,36 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function loadRecordsWithSameMobileNumber(db) {
-        const transaction = db.transaction(storeName, "readwrite"); // Open transaction in readwrite mode
+        const transaction = db.transaction(storeName, "readwrite");
         const store = transaction.objectStore(storeName);
 
-        let referenceMobileNumber = null; // Placeholder for the mobile number to filter
+        let referenceMobileNumber = null;
 
-        // Fetch the first record with Status: "Not Done"
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
 
             if (cursor) {
-                console.log("Processing record:", cursor.value); // Debugging log
+                console.log("Processing record:", cursor.value);
 
                 if (cursor.value.Status === "Not Done") {
-                    referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
+                    referenceMobileNumber = cursor.value.Mobile_Number;
 
                     // Update the Status field to "Working"
                     cursor.value.Status = "Working";
                     const updateRequest = cursor.update(cursor.value);
 
                     updateRequest.onsuccess = function () {
-                        console.log(`Status successfully updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-                        populateBasicInfo(cursor.value); // Populate basic info for the selected record
-                        fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                        console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
+                        localStorage.setItem("currentMobileNumber", referenceMobileNumber); // Save to localStorage
+                        populateBasicInfo(cursor.value);
+                        fetchAllMatchingRecords(referenceMobileNumber, db);
                     };
 
                     updateRequest.onerror = function (event) {
                         console.error("Error updating record:", event.target.error);
                     };
 
-                    return; // Stop further cursor iteration
+                    return;
                 }
                 cursor.continue();
             } else {
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor.continue();
             } else {
                 if (records.length > 0) {
-                    console.log("Matching records found:", records); // Debugging
+                    console.log("Matching records found:", records);
                     populateTable(records);
                 } else {
                     console.warn("No records found for Mobile Number:", mobileNumber);
@@ -120,57 +121,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Requirement_Mentioned"] || "N/A"}</td>
                 <td>${record["Search_Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
-    }
-
-    function updateRecordInIndexedDB(db) {
-        const transaction = db.transaction(storeName, "readwrite");
-        const store = transaction.objectStore(storeName);
-
-        const mobileNumber = mobileNumberField.textContent;
-
-        if (!mobileNumber || mobileNumber === "N/A") {
-            alert("No mobile number selected to update.");
-            return;
-        }
-
-        store.openCursor().onsuccess = function (event) {
-            const cursor = event.target.result;
-
-            if (cursor) {
-                if (cursor.value.Mobile_Number === mobileNumber) {
-                    // Update the record with user input values
-                    cursor.value.Call_Connected = document.getElementById("call-connected").value;
-                    cursor.value.Intent_of_Call = document.getElementById("intent-of-call").value;
-                    cursor.value.Remarks_if_Others = document.getElementById("remarks-if-others").value;
-                    cursor.value.Booking_ID = document.getElementById("booking-id").value;
-                    cursor.value.Booking_Created = document.getElementById("booking-created").value;
-                    cursor.value.Prepay_Collected = document.getElementById("prepay-collected").value;
-                    cursor.value.Agent_Remarks = document.getElementById("agent-remarks").value;
-                    cursor.value.Status = "Completed"; // Mark as completed
-
-                    const updateRequest = cursor.update(cursor.value);
-
-                    updateRequest.onsuccess = function () {
-                        console.log("Record updated successfully:", cursor.value);
-                        alert("Record updated successfully.");
-                    };
-
-                    updateRequest.onerror = function (event) {
-                        console.error("Error updating record:", event.target.error);
-                        alert("Error updating the record. Please try again.");
-                    };
-                }
-                cursor.continue();
-            }
-        };
-
-        store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB for updating records:", event.target.error);
-        };
     }
 });
