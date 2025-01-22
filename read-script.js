@@ -17,39 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     request.onsuccess = function (event) {
         const db = event.target.result;
-        loadRecordsForCurrentMobileNumber(db);
+        loadFirstNotDoneRecord(db);
     };
 
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    // Function to load records for the current mobile number
-    function loadRecordsForCurrentMobileNumber(db) {
-        const currentMobileNumber = localStorage.getItem("currentMobileNumber"); // Assuming mobile number is set here
-        if (!currentMobileNumber) {
-            alert("No mobile number found to display records.");
-            return;
-        }
-
+    // Load the first record where Status is "Not Done"
+    function loadFirstNotDoneRecord(db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
 
-        // Use openCursor to fetch all records matching the current mobile number
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
             if (cursor) {
-                if (cursor.value.Mobile_Number === currentMobileNumber) {
+                if (cursor.value.Status === "Not Done") {
                     records.push(cursor.value);
                 }
-                cursor.continue(); // Continue to the next record
+                cursor.continue();
             } else {
-                // All matching records have been collected
                 if (records.length > 0) {
                     populateTableAndInfo(records);
                 } else {
-                    console.warn("No records found for the current mobile number.");
+                    console.warn("No records found with Status: Not Done.");
                     tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
                 }
             }
@@ -60,15 +52,13 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Function to populate table and basic info
+    // Populate Basic Info and Table
     function populateTableAndInfo(records) {
-        // Populate Basic Info using the first record
         const firstRecord = records[0];
         mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
         nameField.textContent = firstRecord.Name || "N/A";
         emailField.textContent = firstRecord.Email || "N/A";
 
-        // Populate the table with all matching records
         tableBody.innerHTML = ""; // Clear previous rows
         records.forEach((record, index) => {
             const row = document.createElement("tr");

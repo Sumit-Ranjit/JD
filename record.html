@@ -3,137 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic HTML Page</title>
+    <link rel="stylesheet" href="style.css">
     <script src="auth.js" defer></script>
     <script src="Load.js" defer></script>
-    <script src="read-script.js" defer></script>
+    <title>Record Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        form {
+            margin-top: 20px;
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+        }
+        #basic-info {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Basic HTML Page</h1>
-    <p>This is a paragraph of text on my basic HTML page.</p>
-    <div id="user-info">
-        <p>Mobile Number: <span id="mobile-number"></span></p>
-        <p>Email: <span id="email"></span></p>
-        <p>Name: <span id="name"></span></p>
+    <h1>Record Management</h1>
+
+    <!-- Basic Info Section -->
+    <div id="basic-info">
+        <p>Mobile Number: <span id="mobileNumber">N/A</span></p>
+        <p>Name: <span id="name">N/A</span></p>
+        <p>Email: <span id="email">N/A</span></p>
     </div>
-    <form>
+
+    <!-- Table to Display Records -->
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Sr No</th>
+                <th>Time of Entry</th>
+                <th>Hotel</th>
+                <th>Area</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Requirement Mentioned</th>
+                <th>Search Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated dynamically -->
+        </tbody>
+    </table>
+
+    <!-- Form to Capture User Input -->
+    <form id="user-input-form">
         <label for="call-connected">Call Connected:</label>
-        <select id="call-connected" name="call-connected">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select><br>
+        <select id="call-connected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
         <label for="intent-of-call">Intent of Call:</label>
-        <select id="intent-of-call" name="intent-of-call">
-            <option value="sales">Sales</option>
-            <option value="service">Service</option>
-            <option value="enquiry">Enquiry</option>
-            <option value="other">Other</option>
-        </select><br>
+        <select id="intent-of-call">
+            <option value="Sales">Sales</option>
+            <option value="Service">Service</option>
+            <option value="Enquiry">Enquiry</option>
+            <option value="Others">Others</option>
+        </select>
 
-        <div id="other-remarks" style="display:none;">
-            <label for="remarks">Remarks for Others:</label>
-            <input type="text" id="remarks" name="remarks"><br>
-        </div>
+        <label for="remarks-if-others">Remarks if Others:</label>
+        <input type="text" id="remarks-if-others" placeholder="Enter remarks for 'Others'">
 
         <label for="booking-id">Booking ID:</label>
-        <input type="text" id="booking-id" name="booking-id"><br>
-
-        <label for="check-in-date">Check-in Date:</label>
-        <input type="date" id="check-in-date" name="check-in-date"><br>
-
-        <label for="check-out-date">Check-out Date:</label>
-        <input type="date" id="check-out-date" name="check-out-date"><br>
-
-        <label for="no-of-rooms">No of Rooms:</label>
-        <input type="number" id="no-of-rooms" name="no-of-rooms"><br>
+        <input type="text" id="booking-id" placeholder="Enter Booking ID">
 
         <label for="booking-created">Booking Created:</label>
-        <select id="booking-created" name="booking-created">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select><br>
-
-        <label for="reason-not-booking">Reason for Not Booking:</label>
-        <input type="text" id="reason-not-booking" name="reason-not-booking"><br>
-
-        <label for="prepay-pitched">Prepay Pitched:</label>
-        <select id="prepay-pitched" name="prepay-pitched">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select><br>
+        <select id="booking-created">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
         <label for="prepay-collected">Prepay Collected:</label>
-        <select id="prepay-collected" name="prepay-collected">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select><br>
-
-        <label for="reason-not-prepay">Reason for Not Prepay:</label>
-        <input type="text" id="reason-not-prepay" name="reason-not-prepay"><br>
+        <select id="prepay-collected">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
 
         <label for="agent-remarks">Agent Remarks:</label>
-        <textarea id="agent-remarks" name="agent-remarks"></textarea><br>
+        <textarea id="agent-remarks" rows="4" cols="50" placeholder="Enter agent remarks"></textarea>
 
-        <label for="status">Status:</label>
-        <input type="text" id="status" name="status" value="done" readonly><br>
-
-        <input type="submit" value="Submit">
+        <button type="submit" id="submit-btn">Submit</button>
     </form>
-    <table id="info-table" border="1">
-        <thead>
-            <tr>
-                <th>City</th>
-                <th>State</th>
-                <th>Hotel</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Table rows will be populated by read-script.js -->
-        </tbody>
-    </table>
-    <script>
-        document.getElementById('intent-of-call').addEventListener('change', function() {
-            var otherRemarks = document.getElementById('other-remarks');
-            if (this.value === 'other') {
-                otherRemarks.style.display = 'block';
-            } else {
-                otherRemarks.style.display = 'none';
-            }
-        });
-    </script>
-</body>
-</html>
-<script src="read-script.js" defer></script>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Basic HTML Page</title>
-        <script src = "auth.js" defer></script>
-        <script src = "Load.js" defer></script>
-    </head>
-<body>
-    <h1>Welcome to My Basic HTML Page</h1>
-    <p>This is a paragraph of text on my basic HTML page.</p>
-    <div id="user-info">
-        <p>Mobile Number: <span id="mobile-number"></span></p>
-        <p>Email: <span id="email"></span></p>
-        <p>Name: <span id="name"></span></p>
-    </div>
-    <table id="info-table" border="1">
-        <thead>
-            <tr>
-                <th>City</th>
-                <th>State</th>
-                <th>Hotel</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Table rows will be populated by read-script.js -->
-        </tbody>
-    </table>
-</body>
 
-
+    <!-- Scripts -->
+    <script src="read-script.js" defer></script>
+    <script src="write-script.js" defer></script>
+</body>
 </html>
