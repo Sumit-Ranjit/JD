@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Page</title>
-  <script src = "script.js" defer></script>
+  <script src = "delete.js" defer></script>
+
 </head>
 <body>
   <h1>Login</h1>
@@ -46,7 +47,7 @@
           document.getElementById('message').textContent = 'Login successful!';
           localStorage.setItem('loggedInUser', username);
           // Redirect or show additional content for authenticated users
-          window.location.href = 'record.html';
+          window.location.href = 'dashboard.html';
         } else {
           document.getElementById('message').textContent = 'Invalid username or password.';
         }
