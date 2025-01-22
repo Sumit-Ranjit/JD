@@ -34,15 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
+                console.log("Processing record:", cursor.value); // Debugging log
+
                 if (cursor.value.Status === "Not Done") {
                     referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
-                    cursor.value.Status = "Working"; // Update the Status field
-                    cursor.update(cursor.value); // Save the updated record back to IndexedDB
 
-                    console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-                    
-                    populateBasicInfo(cursor.value); // Populate basic info for the selected record
-                    fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                    // Update the Status field to "Working"
+                    cursor.value.Status = "Working";
+                    const updateRequest = cursor.update(cursor.value);
+
+                    updateRequest.onsuccess = function () {
+                        console.log(`Status successfully updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
+                        populateBasicInfo(cursor.value); // Populate basic info for the selected record
+                        fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                    };
+
+                    updateRequest.onerror = function (event) {
+                        console.error("Error updating record:", event.target.error);
+                    };
+
                     return; // Stop further cursor iteration
                 }
                 cursor.continue();
@@ -103,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement_Mentioned"] || "N/A"}</td>
-                <td>${record["Search_Time"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
