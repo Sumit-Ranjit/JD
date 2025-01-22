@@ -28,3 +28,14 @@ window.onload = function() {
 
     console.log("All browser storage data except login information has been deleted.");
 };
+document.addEventListener("DOMContentLoaded", () => {
+    indexedDB.databases().then((databases) => {
+        databases.forEach((dbInfo) => {
+            indexedDB.deleteDatabase(dbInfo.name).onsuccess = function () {
+                console.log(`Database '${dbInfo.name}' deleted successfully.`);
+            };
+        });
+    }).catch((error) => {
+        console.error("Error fetching databases:", error);
+    });
+});
