@@ -1,18 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const dbName = "initDB";
+    const storeName = "user_data_store";
+    const tableBody = document.querySelector("#data-table tbody");
     const mobileNumberField = document.getElementById("mobileNumber");
     const nameField = document.getElementById("name");
     const emailField = document.getElementById("email");
-    const tableBody = document.querySelector("#data-table tbody");
 
-    // Ensure required elements exist
-    if (!mobileNumberField || !nameField || !emailField || !tableBody) {
+    if (!tableBody || !mobileNumberField || !nameField || !emailField) {
         console.error("HTML elements with required IDs are missing.");
         return;
     }
 
-    // Open the initDB database
-    const dbName = "initDB";
-    const storeName = "user_data_store";
     const request = indexedDB.open(dbName, 1);
 
     request.onsuccess = function (event) {
@@ -24,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    // Load the first record where Status is "Not Done"
     function loadFirstNotDoneRecord(db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
@@ -33,12 +30,15 @@ document.addEventListener("DOMContentLoaded", () => {
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
             if (cursor) {
+                console.log("Checking record:", cursor.value); // Debugging
+
                 if (cursor.value.Status === "Not Done") {
                     records.push(cursor.value);
                 }
-                cursor.continue();
+                cursor.continue(); // Continue to the next record
             } else {
                 if (records.length > 0) {
+                    console.log("Matching records found:", records); // Debugging
                     populateTableAndInfo(records);
                 } else {
                     console.warn("No records found with Status: Not Done.");
@@ -52,13 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Populate Basic Info and Table
     function populateTableAndInfo(records) {
+        // Populate Basic Info using the first record
         const firstRecord = records[0];
         mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
         nameField.textContent = firstRecord.Name || "N/A";
         emailField.textContent = firstRecord.Email || "N/A";
 
+        // Populate Table
         tableBody.innerHTML = ""; // Clear previous rows
         records.forEach((record, index) => {
             const row = document.createElement("tr");
