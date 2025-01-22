@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const updatedRecord = cursor.value;
             updatedRecord.Status = "Working";
             cursor.update(updatedRecord);
-        }
+        };
 
         updateRequest.onerror = function (event) {
             console.error("Error updating IndexedDB record:", event.target.error);
