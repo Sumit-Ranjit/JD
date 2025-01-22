@@ -1,100 +1,58 @@
-// Load.js
+document.addEventListener("DOMContentLoaded", () => {
+    const dbName = "initDB";
+    const storeName = "user_data_store";
 
-// Function to initialize IndexedDB
-function initDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('MyDatabase', 1);
+    const request = indexedDB.open(dbName, 1);
 
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            const objectStore = db.createObjectStore('DataStore', { keyPath: 'Mobile_Number' });
-            objectStore.createIndex('Status', 'Status', { unique: false });
-        };
+    request.onupgradeneeded = function (event) {
+        const db = event.target.result;
 
-        request.onsuccess = (event) => {
-            resolve(event.target.result);
-        };
-
-        request.onerror = (event) => {
-            reject(event.target.error);
-        };
-    });
-}
-
-// Function to load data from Data.json
-async function loadData() {
-    const response = await fetch('Data.json');
-    const data = await response.json();
-    const db = await initDB();
-
-    const transaction = db.transaction(['DataStore'], 'readwrite');
-    const objectStore = transaction.objectStore('DataStore');
-
-    data.forEach(item => {
-        objectStore.put(item);
-    });
-
-    transaction.oncomplete = () => {
-        console.log('All data loaded into IndexedDB');
+        // Create object store if it doesn't exist
+        if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName, { keyPath: "Mobile_Number" });
+            console.log(`Object store '${storeName}' created.`);
+        }
     };
 
-    transaction.onerror = (event) => {
-        console.error('Transaction error:', event.target.error);
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+        loadFirstNotDoneRecord(db); // Call your function here
     };
-}
 
-// Function to filter data by Mobile_Number
-function filterByMobileNumber(mobileNumber) {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('MyDatabase', 1);
+    request.onerror = function (event) {
+        console.error("Error opening IndexedDB:", event.target.error);
+    };
 
-        request.onsuccess = (event) => {
-            const db = event.target.result;
-            const transaction = db.transaction(['DataStore'], 'readonly');
-            const objectStore = transaction.objectStore('DataStore');
-            const getRequest = objectStore.get(mobileNumber);
+    // Function to load the first record with Status: "Not Done"
+    function loadFirstNotDoneRecord(db) {
+        const transaction = db.transaction(storeName, "readonly");
+        const store = transaction.objectStore(storeName);
+        const records = [];
 
-            getRequest.onsuccess = () => {
-                resolve(getRequest.result);
-            };
-
-            getRequest.onerror = (event) => {
-                reject(event.target.error);
-            };
+        store.openCursor().onsuccess = function (event) {
+            const cursor = event.target.result;
+            if (cursor) {
+                if (cursor.value.Status === "Not Done") {
+                    records.push(cursor.value);
+                }
+                cursor.continue();
+            } else {
+                if (records.length > 0) {
+                    populateTableAndInfo(records);
+                } else {
+                    console.warn("No records found with Status: Not Done.");
+                }
+            }
         };
 
-        request.onerror = (event) => {
-            reject(event.target.error);
+        store.openCursor().onerror = function (event) {
+            console.error("Error querying IndexedDB:", event.target.error);
         };
-    });
-}
+    }
 
-// Function to filter data by Status
-function filterByStatus(status) {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('MyDatabase', 1);
-
-        request.onsuccess = (event) => {
-            const db = event.target.result;
-            const transaction = db.transaction(['DataStore'], 'readonly');
-            const objectStore = transaction.objectStore('DataStore');
-            const index = objectStore.index('Status');
-            const getRequest = index.getAll(status);
-
-            getRequest.onsuccess = () => {
-                resolve(getRequest.result);
-            };
-
-            getRequest.onerror = (event) => {
-                reject(event.target.error);
-            };
-        };
-
-        request.onerror = (event) => {
-            reject(event.target.error);
-        };
-    });
-}
-
-// Load data when the script is executed
-loadData();
+    // Populate Basic Info and Table
+    function populateTableAndInfo(records) {
+        const firstRecord = records[0];
+        console.log("First Record:", firstRecord); // Debugging purpose
+    }
+});
