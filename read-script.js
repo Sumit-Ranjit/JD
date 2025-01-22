@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         records.forEach((record, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${index + 1}</td>
+                <td>${record["Sr_No"] || "N/A"}</td>
                 <td>${record["Time_of_Entry"] || "N/A"}</td>
                 <td>${record["Hotel"] || "N/A"}</td>
                 <td>${record["Area"] || "N/A"}</td>
