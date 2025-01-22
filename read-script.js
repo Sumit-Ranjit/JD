@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function loadRecordsWithSameMobileNumber(db) {
-        const transaction = db.transaction(storeName, "readonly");
+        const transaction = db.transaction(storeName, "readwrite");
         const store = transaction.objectStore(storeName);
 
         let referenceMobileNumber = null; // Placeholder for the mobile number to filter
@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
                     populateBasicInfo(cursor.value); // Populate basic info for the first matching record
                     fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                    updateStatusToWorking(cursor); // Update the status to "Working"
                     return; // Stop further cursor iteration
                 }
                 cursor.continue();
