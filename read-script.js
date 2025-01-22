@@ -15,51 +15,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
     request.onsuccess = function (event) {
         const db = event.target.result;
-        loadFirstNotDoneRecord(db);
+        console.log("Database opened successfully.");
+        loadRecordsWithSameMobileNumber(db);
     };
 
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    function loadFirstNotDoneRecord(db) {
+    function loadRecordsWithSameMobileNumber(db) {
+        const transaction = db.transaction(storeName, "readonly");
+        const store = transaction.objectStore(storeName);
+
+        let referenceMobileNumber = null; // Placeholder for the mobile number to filter
+
+        // First, fetch the reference mobile number (e.g., the first record with Status: "Not Done")
+        store.openCursor().onsuccess = function (event) {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                if (cursor.value.Status === "Not Done") {
+                    referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
+                    populateBasicInfo(cursor.value); // Populate basic info for the first matching record
+                    fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                    return; // Stop further cursor iteration
+                }
+                cursor.continue();
+            } else {
+                console.warn("No records found with Status: Not Done.");
+                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+            }
+        };
+
+        store.openCursor().onerror = function (event) {
+            console.error("Error querying IndexedDB for reference mobile number:", event.target.error);
+        };
+    }
+
+    function fetchAllMatchingRecords(mobileNumber, db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
 
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
-            if (cursor) {
-                console.log("Checking record:", cursor.value); // Debugging
 
-                if (cursor.value.Status === "Not Done") {
+            if (cursor) {
+                if (cursor.value.Mobile_Number === mobileNumber) {
                     records.push(cursor.value);
                 }
-                cursor.continue(); // Continue to the next record
+                cursor.continue();
             } else {
                 if (records.length > 0) {
                     console.log("Matching records found:", records); // Debugging
-                    populateTableAndInfo(records);
+                    populateTable(records);
                 } else {
-                    console.warn("No records found with Status: Not Done.");
+                    console.warn("No records found for Mobile Number:", mobileNumber);
                     tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
                 }
             }
         };
 
         store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB:", event.target.error);
+            console.error("Error querying IndexedDB for matching records:", event.target.error);
         };
     }
 
-    function populateTableAndInfo(records) {
-        // Populate Basic Info using the first record
-        const firstRecord = records[0];
-        mobileNumberField.textContent = firstRecord.Mobile_Number || "N/A";
-        nameField.textContent = firstRecord.Name || "N/A";
-        emailField.textContent = firstRecord.Email || "N/A";
+    function populateBasicInfo(record) {
+        mobileNumberField.textContent = record.Mobile_Number || "N/A";
+        nameField.textContent = record.Name || "N/A";
+        emailField.textContent = record.Email || "N/A";
+    }
 
-        // Populate Table
+    function populateTable(records) {
         tableBody.innerHTML = ""; // Clear previous rows
         records.forEach((record, index) => {
             const row = document.createElement("tr");
