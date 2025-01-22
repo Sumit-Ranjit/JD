@@ -29,7 +29,7 @@ function generateTable(records) {
 
 // Main function to execute the script
 function main() {
-    const data = getDataFromLocalStorage('JD_Data');
+    const data = getDataFromLocalStorage('IndexDB');
     if (!data) {
         console.log('No data found in local storage');
         return;
