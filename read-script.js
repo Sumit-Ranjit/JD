@@ -17,13 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const db = event.target.result;
         console.log("Database opened successfully.");
 
-        // Check for last saved mobile number
+        // Check if there's a saved mobile number
         const lastMobileNumber = localStorage.getItem("currentMobileNumber");
         if (lastMobileNumber) {
             console.log(`Resuming from Mobile Number: ${lastMobileNumber}`);
             fetchAllMatchingRecords(lastMobileNumber, db);
         } else {
-            console.log("No previous mobile number found. Starting fresh.");
+            console.log("Starting fresh: Loading the first record.");
             loadFirstRecordWithNotDoneStatus(db);
         }
     };
@@ -40,27 +40,25 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
-                console.log("Processing record:", cursor.value);
-
                 if (cursor.value.Status === "Not Done") {
-                    const referenceMobileNumber = cursor.value.Mobile_Number;
+                    const mobileNumber = cursor.value.Mobile_Number;
 
-                    // Update the Status field to "Working"
+                    // Update the record's Status to "Working"
                     cursor.value.Status = "Working";
                     const updateRequest = cursor.update(cursor.value);
 
                     updateRequest.onsuccess = function () {
-                        console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-                        localStorage.setItem("currentMobileNumber", referenceMobileNumber); // Save mobile number
+                        console.log(`Status updated to "Working" for Mobile Number: ${mobileNumber}`);
+                        localStorage.setItem("currentMobileNumber", mobileNumber); // Save the mobile number
                         populateBasicInfo(cursor.value);
-                        fetchAllMatchingRecords(referenceMobileNumber, db);
+                        fetchAllMatchingRecords(mobileNumber, db);
                     };
 
                     updateRequest.onerror = function (event) {
                         console.error("Error updating record:", event.target.error);
                     };
 
-                    return;
+                    return; // Stop further processing
                 }
                 cursor.continue();
             } else {
