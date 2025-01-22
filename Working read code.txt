@@ -56,26 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
-        const updateTransaction = db.transaction(storeName, "readwrite");
-        const updateStore = updateTransaction.objectStore(storeName);
-
-        const updateRequest = updateStore.openCursor();
-        updateRequest.onsuccess = function (event) {
-            const cursor = event.target.result;
-
-            if (cursor) {
-            if (cursor.value.Mobile_Number === mobileNumber) {
-                const updatedRecord = cursor.value;
-                updatedRecord.Status = "Working";
-                cursor.update(updatedRecord);
-            }
-            cursor.continue();
-            }
-        };
-
-        updateRequest.onerror = function (event) {
-            console.error("Error updating IndexedDB record:", event.target.error);
-        };
 
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
