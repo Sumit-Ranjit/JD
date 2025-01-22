@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('yourButtonId').addEventListener('click', function() {
+
+    document.getElementById('submit-btn').addEventListener('click', function() {
         const formElements = document.querySelectorAll('#yourFormId input, #yourFormId select, #yourFormId textarea');
         const formData = {};
 
@@ -10,4 +10,3 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(formData);
         // You can now send formData to your server or process it as needed
     });
-});
