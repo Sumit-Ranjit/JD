@@ -2,12 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_data_store";
 
-    const request = indexedDB.open(dbName, 1);
+    const request = indexedDB.open(dbName, 2); // Increment the version to trigger onupgradeneeded
 
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
 
-        // Create object store if it doesn't exist
+        // Create the object store if it doesn't already exist
         if (!db.objectStoreNames.contains(storeName)) {
             db.createObjectStore(storeName, { keyPath: "Mobile_Number" });
             console.log(`Object store '${storeName}' created.`);
@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     request.onsuccess = function (event) {
         const db = event.target.result;
-        loadFirstNotDoneRecord(db); // Call your function here
+        console.log("Database opened successfully.");
+
+        // Call your function to load records (if needed)
+        loadFirstNotDoneRecord(db);
     };
 
     request.onerror = function (event) {
@@ -27,32 +30,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function loadFirstNotDoneRecord(db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
-        const records = [];
 
         store.openCursor().onsuccess = function (event) {
             const cursor = event.target.result;
             if (cursor) {
                 if (cursor.value.Status === "Not Done") {
-                    records.push(cursor.value);
+                    console.log("Record found:", cursor.value);
+                    return; // Stop further cursor iteration
                 }
                 cursor.continue();
             } else {
-                if (records.length > 0) {
-                    populateTableAndInfo(records);
-                } else {
-                    console.warn("No records found with Status: Not Done.");
-                }
+                console.log("No records found with Status: Not Done.");
             }
         };
 
         store.openCursor().onerror = function (event) {
             console.error("Error querying IndexedDB:", event.target.error);
         };
-    }
-
-    // Populate Basic Info and Table
-    function populateTableAndInfo(records) {
-        const firstRecord = records[0];
-        console.log("First Record:", firstRecord); // Debugging purpose
     }
 });
