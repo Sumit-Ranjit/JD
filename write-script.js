@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         request.onsuccess = function (event) {
             const db = event.target.result;
-            const transaction = db.transaction(storeName, "readonly");
+            
             const transaction = db.transaction(storeName, "readwrite");
             const store = transaction.objectStore(storeName);
             const records = [];
