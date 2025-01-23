@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const storeName = "user_data_store";
     const dataUrl = "./Data.json"; // Path to your Data.json file
 
-    const request = indexedDB.open(dbName, 1);
+    const request = indexedDB.open(dbName, 2);
 
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
@@ -47,4 +47,5 @@ document.addEventListener("DOMContentLoaded", () => {
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
+    
 });
