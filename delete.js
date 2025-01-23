@@ -43,7 +43,7 @@ window.onload = function() {
 // reset-initdb.js
 
 // Function to delete the existing IndexedDB database and create a new one
-document.addEventListener("DOMContentLoaded", () => {
+
     const dbName = "initDB";
     const storeName = "user_data_store";
     const dataUrl = "./Data.json"; // Path to your initial data file
@@ -66,4 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-});
+;
