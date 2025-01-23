@@ -40,6 +40,42 @@ window.onload = function() {
     const dataUrl = "./Data.json"; // Path to your initial data file
 
     // Function to delete the existing database
-   storeName.clear();
+   
 
 ;
+
+// Step 1: Delete the entire database
+
+
+let deleteRequest = indexedDB.deleteDatabase(dbName);
+
+deleteRequest.onsuccess = function() {
+  console.log(`Database '${dbName}' deleted successfully!`);
+
+  // Step 2: Recreate the database with a new version
+  let openRequest = indexedDB.open(dbName, 1); // Open with new version (2, or any version you want)
+
+  openRequest.onupgradeneeded = function(event) {
+    let db = event.target.result;
+    console.log(`Opening database with version: ${event.target.version}`);
+    
+    // Create object stores (for example, 'user_store_data')
+    if (!db.objectStoreNames.contains('user_store_data')) {
+      db.createObjectStore('user_store_data', { keyPath: 'id' });
+    }
+
+    // Add any other object stores or indexes as needed
+  };
+
+  openRequest.onsuccess = function() {
+    console.log('Database opened successfully with new version!');
+  };
+
+  openRequest.onerror = function() {
+    console.log('Error opening database.');
+  };
+};
+
+deleteRequest.onerror = function() {
+  console.log('Error deleting the database.');
+};
