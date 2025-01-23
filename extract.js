@@ -25,7 +25,7 @@
     };
   
     // Power Automate HTTP trigger URL (replace this with your Power Automate URL)
-    const powerAutomateUrl = "https://prod-xx.flow.microsoft.com/..." // Replace with your flow URL
+    const powerAutomateUrl = "https://api.github.com/repos/Sumit-Ranjit/JD/git/blobs/f01ac58530b46255cebe325e837cd95a04c782f2" // Replace with your flow URL
   
     // Send the data to Power Automate using fetch
     await fetch(powerAutomateUrl, {
