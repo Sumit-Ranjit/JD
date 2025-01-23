@@ -28,7 +28,7 @@ window.onload = function() {
 
     console.log("All browser storage data except login information has been deleted.");
 
-document.addEventListener("DOMContentLoaded", () => {
+
     indexedDB.databases().then((databases) => {
         databases.forEach((dbInfo) => {
             indexedDB.deleteDatabase(dbInfo.name).onsuccess = function () {
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }).catch((error) => {
         console.error("Error fetching databases:", error);
     });
-});
+};
 
 // reset-initdb.js
 
@@ -66,55 +66,4 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Function to create a new database and populate it with initial data
-    function createNewDatabase() {
-        const request = indexedDB.open(dbName, 1);
-
-        request.onupgradeneeded = function (event) {
-            const db = event.target.result;
-
-            if (!db.objectStoreNames.contains(storeName)) {
-                const store = db.createObjectStore(storeName, { keyPath: "Mobile_Number" });
-                console.log(`Object store '${storeName}' created.`);
-
-                // Fetch initial data from Data.json and populate the database
-                fetch(dataUrl)
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(`Failed to fetch ${dataUrl}: ${response.statusText}`);
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        const transaction = db.transaction(storeName, "readwrite");
-                        const objectStore = transaction.objectStore(storeName);
-
-                        data.forEach((record) => {
-                            objectStore.add(record);
-                        });
-
-                        transaction.oncomplete = function () {
-                            console.log("Initial data loaded into IndexedDB.");
-                            alert("Database reset and initialized successfully.");
-                        };
-
-                        transaction.onerror = function (event) {
-                            console.error("Error loading initial data:", event.target.error);
-                        };
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching initial data:", error);
-                    });
-            }
-        };
-
-        request.onsuccess = function () {
-            console.log("New database created successfully.");
-        };
-
-        request.onerror = function (event) {
-            console.error("Error creating database:", event.target.error);
-        };
-    }
-
-})}
+});
