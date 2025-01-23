@@ -90,9 +90,28 @@
 
         <label for="booking-id">Booking ID:</label>
         <input type="text" id="booking-id" placeholder="Enter Booking ID">
+       
+        <label for="check-in-date">Check In Date:</label>
+        <input type="date" id="check-in-date" name="check-in-date">
 
+        <label for="check-out-date">Check Out Date:</label>
+        <input type="date" id="check-out-date" name="check-out-date">
+
+        <label for="number-of-rooms">Number of Rooms:</label>
+        <input type="number" id="number-of-rooms" name="number-of-rooms" min="1">
+        
         <label for="booking-created">Booking Created:</label>
         <select id="booking-created">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label for="reason-not-created">Reason for Booking Not Creation:</label>
+        <input type="text" id="reason-not-created" name="reason-not-created">
+        
+        <label for="prepay-pitched">Prepay Pitched:</label>
+        <select id="prepay-pitched" name="prepay-pitched">
+            <option value="">Select</option>
             <option value="Yes">Yes</option>
             <option value="No">No</option>
         </select>
@@ -103,6 +122,9 @@
             <option value="No">No</option>
         </select>
 
+        <label for="reason-non-prepay">Reason for Non Prepay:</label>
+        <input type="text" id="reason-non-prepay" name="reason-non-prepay">
+        
         <label for="agent-remarks">Agent Remarks:</label>
         <textarea id="agent-remarks" rows="4" cols="50" placeholder="Enter agent remarks"></textarea>
 
