@@ -1,3 +1,5 @@
+import { version, getDatabaseVersion } from './dbversion.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_data_store";
@@ -11,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const request = indexedDB.open(dbName, 2);
+    const request = indexedDB.open(dbName, 4);
 
     request.onsuccess = function (event) {
         const db = event.target.result;

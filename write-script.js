@@ -1,10 +1,11 @@
+import { version, getDatabaseVersion } from './dbversion.js';
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_data_store";
 
     // Function to update a record in IndexedDB
     function updateRecordInDB() {
-        const request = indexedDB.open(dbName, 3);
+        const request = indexedDB.open(dbName, 4);
 
         request.onsuccess = function (event) {
             const db = event.target.result;
