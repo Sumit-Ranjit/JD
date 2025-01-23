@@ -1,15 +1,41 @@
-// Retrieve the value stored in localStorage with the key "Data.json"
-const rawData = localStorage.getItem("Data.json");
+document.addEventListener("DOMContentLoaded", () => {
+    const powerAutomateUrl = "https://prod-03.centralindia.logic.azure.com:443/workflows/4855239eef9346f185b1792b259dfb23/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0Bf_RNJxBoxkD2U4XLFQ9OXA6n3DgZKHbZiG5hcuVFo"; // Replace with the URL from Power Automate
 
-if (rawData) {
-    try {
-        // Parse the JSON data into a structured JavaScript object
-        const data = JSON.parse(rawData);
+    // Retrieve data from localStorage
+    const rawData = localStorage.getItem("Data.json");
 
-        console.log("Parsed Data:", data); // Logs the structured data
-    } catch (error) {
-        console.error("Error parsing JSON data from localStorage:", error);
+    if (rawData) {
+        try {
+            // Parse the data into a structured format
+            const data = JSON.parse(rawData);
+
+            // Send the data to Power Automate
+            fetch(powerAutomateUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data), // Convert data back to JSON format
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        console.log("Data successfully sent to Power Automate.");
+                        alert("Data sent to Power Automate successfully!");
+                    } else {
+                        console.error("Failed to send data:", response.statusText);
+                        alert("Failed to send data to Power Automate.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error during fetch request:", error);
+                    alert("An error occurred while sending data to Power Automate.");
+                });
+        } catch (error) {
+            console.error("Failed to parse data from localStorage:", error);
+            alert("Invalid data in localStorage. Could not send.");
+        }
+    } else {
+        console.log("No data found in localStorage for key 'Data.json'.");
+        alert("No data found in localStorage to send.");
     }
-} else {
-    console.log("No data found in localStorage for key 'Data.json'.");
-}
+});
