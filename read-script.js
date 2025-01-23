@@ -1,5 +1,3 @@
-import { version, getDatabaseVersion } from './dbversion.js';
-
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_data_store";
@@ -42,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     cursor.update(cursor.value); // Save the updated record back to IndexedDB
 
                     console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-                    
+
                     populateBasicInfo(cursor.value); // Populate basic info for the selected record
                     fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
                     return; // Stop further cursor iteration
@@ -105,10 +103,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
-                <td>${record["Requirement_Mentioned"] || "N/A"}</td>
-                <td>${record["Search_Time"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
             `;
             tableBody.appendChild(row);
         });
     }
+});
 });
