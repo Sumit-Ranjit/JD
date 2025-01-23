@@ -61,7 +61,7 @@ deleteRequest.onsuccess = function() {
     
     // Create object stores (for example, 'user_store_data')
     if (!db.objectStoreNames.contains('user_store_data')) {
-      db.createObjectStore('user_store_data', { keyPath: 'id' });
+      db.createObjectStore('user_store_data', { keyPath: 'Mobile_Number' });
     }
 
     // Add any other object stores or indexes as needed
