@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const storeName = "user_data_store";
     const dataUrl = "./Data.json"; // Path to your Data.json file
 
-    const request = indexedDB.open(dbName, 4);
+    const request = indexedDB.open(dbName, 1);
 
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
