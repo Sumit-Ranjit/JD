@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    const request = indexedDB.open(dbName, 2);
+    const request = indexedDB.open(dbName, 3);
 
     request.onsuccess = function (event) {
         const db = event.target.result;
