@@ -27,7 +27,7 @@ window.onload = function() {
     }
 
     console.log("All browser storage data except login information has been deleted.");
-};
+
 document.addEventListener("DOMContentLoaded", () => {
     indexedDB.databases().then((databases) => {
         databases.forEach((dbInfo) => {
@@ -117,4 +117,4 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-})
+})}
