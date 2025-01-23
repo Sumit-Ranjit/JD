@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (record) {
                     // Update the record with new values from the form
-                    record.Sr_No = Sr_No;
+                    record.mobileNumber = document.getElementById("mobileNumber").value;
                     record.Call_Connected = document.getElementById("call-connected").value;
                     record.Intent_of_Call = document.getElementById("intent-of-call").value;
                     record.Remarks_If_Others = document.getElementById("remarks-if-others").value;
