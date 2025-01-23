@@ -1,3 +1,7 @@
+const loggedInUser = localStorage.getItem("loggedInUser");
+const currentTime = new Date();
+console.log(`Current time: ${currentTime.toLocaleString()}`);
+
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_data_store";
@@ -41,13 +45,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (record) {
                     // Update the record with new values from the form
+                    record.Sr_No = document.getElementById("Sr_No").value;
                     record.Call_Connected = document.getElementById("call-connected").value;
                     record.Intent_of_Call = document.getElementById("intent-of-call").value;
                     record.Remarks_If_Others = document.getElementById("remarks-if-others").value;
                     record.Booking_ID = document.getElementById("booking-id").value;
+                    record.checkin_Date = document.getElementById("check-in-date").value;  
+                    record.Checkout_date = document.getElementById("check-out-date").value;
+                    record.No_Of_Rooms = document.getElementById("no-of-rooms").value;  
                     record.Booking_Created = document.getElementById("booking-created").value;
+                    record.Reason_of_Not_Booking = document.getElementById("reason-not-created").value;  
+                    record.Prepay_Pitched  = document.getElementById("prepay-pitched").value;
                     record.Prepay_Collected = document.getElementById("prepay-collected").value;
+                    record.Reason_of_non_prepay = document.getElementById("reason-non-prepay").value;
                     record.Agent_Remarks = document.getElementById("agent-remarks").value;
+                    record.Call_Back_Agent = loggedInUser;
+record.Call_Back_Time = currentTime.toLocaleString();
                     record.Status = "Done";
 
                     // Save the updated record back to IndexedDB
