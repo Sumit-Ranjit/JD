@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to update a record in IndexedDB
     function updateRecordInDB() {
-        const request = indexedDB.open(dbName, 4);
+        const request = indexedDB.open(dbName, 1);
 
         request.onsuccess = function (event) {
             const db = event.target.result;
