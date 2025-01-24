@@ -1,18 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
     const storeName = "user_store_data";
-    const jsonFilePath = "./Data.json"; // Path to the Data.json file
+    const jsonFilePath = "./Data.json"; // Ensure Data.json is in the same folder as this script
 
-    // Open IndexedDB
     const request = indexedDB.open(dbName, 1);
 
+    // Create the database schema
     request.onupgradeneeded = function (event) {
         const db = event.target.result;
         console.log("Setting up IndexedDB...");
-
-        // Create object store with 'Mobile_Number' as the keyPath
         if (!db.objectStoreNames.contains(storeName)) {
-            db.createObjectStore(storeName, { keyPath: "Mobile_Number" });
+            db.createObjectStore(storeName, { keyPath: "Mobile_Number" }); // Use Mobile_Number as the key
         }
     };
 
@@ -20,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const db = event.target.result;
         console.log("IndexedDB opened successfully.");
 
-        // Load and parse the Data.json file
+        // Fetch and load data from Data.json
         fetch(jsonFilePath)
             .then((response) => {
                 if (!response.ok) {
@@ -31,12 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
             .then((data) => {
                 console.log("Data.json loaded successfully:", data);
 
-                // Store data in IndexedDB
                 const transaction = db.transaction(storeName, "readwrite");
                 const store = transaction.objectStore(storeName);
 
-                // Add the data to the store
-                store.put(data);
+                data.forEach((record, index) => {
+                    if (record.Mobile_Number) {
+                        store.put(record); // Add valid records to IndexedDB
+                    } else {
+                        console.warn("Skipping record with missing Mobile_Number:", record);
+                    }
+                });
 
                 transaction.oncomplete = () => {
                     console.log("Data successfully added to IndexedDB.");
