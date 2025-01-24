@@ -36,9 +36,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 records.push(cursor.value);
                 cursor.continue();
             } else {
-                // Process records to find duplicates
+                // Find and display duplicates
                 const duplicates = findDuplicates(records);
-
                 if (duplicates.length > 0) {
                     console.log("Duplicate records found:", duplicates);
                     populateTable(duplicates);
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
             grouped[mobileNumber].push(record);
         });
 
-        // Filter groups with more than one record (duplicates)
+        // Filter groups where there are more than one record
         const duplicates = [];
         for (const mobileNumber in grouped) {
             if (grouped[mobileNumber].length > 1) {
