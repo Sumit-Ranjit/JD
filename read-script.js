@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!tableBody || !mobileNumberField || !nameField || !emailField) {
         console.error("HTML elements with required IDs are missing.");
         return;
-    }
+    
 
     const request = indexedDB.open(dbName, 1);
 
@@ -111,3 +111,4 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+}
