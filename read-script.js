@@ -1,63 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
-    const storeName = "user_data_store";
-    const tableBody = document.querySelector("#data-table tbody");
-    const mobileNumberField = document.getElementById("mobileNumber");
-    const nameField = document.getElementById("name");
-    const emailField = document.getElementById("email");
+    const storeName = "user_store_data";
 
-    if (!tableBody || !mobileNumberField || !nameField || !emailField) {
+    const mobileNumberField = document.getElementById("mobileNumber");
+    const emailField = document.getElementById("email");
+    const nameField = document.getElementById("name");
+    const tableBody = document.querySelector("#data-table tbody");
+
+    if (!mobileNumberField || !emailField || !nameField || !tableBody) {
         console.error("HTML elements with required IDs are missing.");
         return;
-    
+    }
 
+    // Open IndexedDB
     const request = indexedDB.open(dbName, 1);
 
     request.onsuccess = function (event) {
         const db = event.target.result;
-        console.log("Database opened successfully.");
-        loadRecordsWithSameMobileNumber(db);
-    };
+        console.log("IndexedDB opened successfully.");
 
-    request.onerror = function (event) {
-        console.error("Error opening IndexedDB:", event.target.error);
-    };
-
-    function loadRecordsWithSameMobileNumber(db) {
-        const transaction = db.transaction(storeName, "readwrite"); // Open transaction in readwrite mode
-        const store = transaction.objectStore(storeName);
-
-        let referenceMobileNumber = null; // Placeholder for the mobile number to filter
-
-        // Fetch the first record with Status: "Not Done"
-        store.openCursor().onsuccess = function (event) {
-            const cursor = event.target.result;
-
-            if (cursor) {
-                if (cursor.value.Status === "Not Done") {
-                    referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
-                    cursor.value.Status = "Working"; // Update the Status field
-                    cursor.update(cursor.value); // Save the updated record back to IndexedDB
-
-                    console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
-
-                    populateBasicInfo(cursor.value); // Populate basic info for the selected record
-                    fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
-                    return; // Stop further cursor iteration
-                }
-                cursor.continue();
-            } else {
-                console.warn("No records found with Status: Not Done.");
-                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
-            }
-        };
-
-        store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB for reference mobile number:", event.target.error);
-        };
-    }
-
-    function fetchAllMatchingRecords(mobileNumber, db) {
+        // Fetch all records from the database
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
@@ -66,34 +28,41 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
-                if (cursor.value.Mobile_Number === mobileNumber) {
-                    records.push(cursor.value);
-                }
+                records.push(cursor.value);
                 cursor.continue();
             } else {
                 if (records.length > 0) {
-                    console.log("Matching records found:", records); // Debugging
-                    populateTable(records);
+                    console.log("Records fetched successfully:", records);
+                    populateFields(records[0]); // Populate basic info using the first record
+                    populateTable(records); // Populate table with all records
                 } else {
-                    console.warn("No records found for Mobile Number:", mobileNumber);
+                    console.warn("No records found in the database.");
                     tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
                 }
             }
         };
 
         store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB for matching records:", event.target.error);
+            console.error("Error querying IndexedDB:", event.target.error);
         };
-    }
+    };
 
-    function populateBasicInfo(record) {
+    request.onerror = function (event) {
+        console.error("Error opening IndexedDB:", event.target.error);
+    };
+
+    function populateFields(record) {
+        // Display mobile number, email, and name from the first record
         mobileNumberField.textContent = record.Mobile_Number || "N/A";
-        nameField.textContent = record.Name || "N/A";
         emailField.textContent = record.Email || "N/A";
+        nameField.textContent = record.Name || "N/A";
     }
 
     function populateTable(records) {
-        tableBody.innerHTML = ""; // Clear previous rows
+        // Clear the table before populating
+        tableBody.innerHTML = "";
+
+        // Populate each record in the table
         records.forEach((record, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -105,10 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["State"] || "N/A"}</td>
                 <td>${record["Requirement Mentioned"] || "N/A"}</td>
                 <td>${record["Search Time"] || "N/A"}</td>
-                
             `;
             tableBody.appendChild(row);
         });
     }
-};
 });
