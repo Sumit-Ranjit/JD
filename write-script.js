@@ -69,7 +69,7 @@ record.Call_Back_Time = currentTime.toLocaleString();
                     updateRequest.onsuccess = function () {
                         console.log("Record updated successfully:", record);
                         
-                        location.reload();
+                        //location.reload();
                     };
 
                     updateRequest.onerror = function (event) {
