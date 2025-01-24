@@ -17,14 +17,14 @@ document.addEventListener("DOMContentLoaded", () => {
     request.onsuccess = function (event) {
         const db = event.target.result;
         console.log("Database opened successfully.");
-        loadAllRecords(db);
+        loadDuplicateRecords(db);
     };
 
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    function loadAllRecords(db) {
+    function loadDuplicateRecords(db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
@@ -33,16 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
-                records.push(cursor.value); // Add each record to the array
+                records.push(cursor.value);
                 cursor.continue();
             } else {
-                if (records.length > 0) {
-                    console.log("Records found in IndexedDB:", records);
-                    displayBasicInfo(records[0]); // Display info for the first record
-                    populateTable(records); // Populate table with all records
+                // Process records to find duplicates
+                const duplicates = findDuplicates(records);
+
+                if (duplicates.length > 0) {
+                    console.log("Duplicate records found:", duplicates);
+                    populateTable(duplicates);
                 } else {
-                    console.warn("No records found in IndexedDB.");
-                    tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+                    console.warn("No duplicate records found.");
+                    tableBody.innerHTML = `<tr><td colspan="8">No duplicate records found</td></tr>`;
                 }
             }
         };
@@ -52,15 +54,32 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    function displayBasicInfo(record) {
-        mobileNumberField.textContent = record.Mobile_Number || "N/A";
-        emailField.textContent = record.Email || "N/A";
-        nameField.textContent = record.Name || "N/A";
+    function findDuplicates(records) {
+        const grouped = {};
+
+        // Group records by Mobile_Number
+        records.forEach((record) => {
+            const mobileNumber = record.Mobile_Number || "N/A";
+            if (!grouped[mobileNumber]) {
+                grouped[mobileNumber] = [];
+            }
+            grouped[mobileNumber].push(record);
+        });
+
+        // Filter groups with more than one record (duplicates)
+        const duplicates = [];
+        for (const mobileNumber in grouped) {
+            if (grouped[mobileNumber].length > 1) {
+                duplicates.push(...grouped[mobileNumber]);
+            }
+        }
+
+        return duplicates;
     }
 
     function populateTable(records) {
         tableBody.innerHTML = ""; // Clear previous rows
-        records.forEach((record, index) => {
+        records.forEach((record) => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${record["Sr_No"] || "N/A"}</td>
