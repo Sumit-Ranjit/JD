@@ -33,10 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
-                records.push(cursor.value);
+                // Ensure Mobile_Number exists and is valid
+                const mobileNumber = cursor.value.Mobile_Number || "N/A";
+                if (mobileNumber !== "N/A") {
+                    records.push(cursor.value);
+                }
                 cursor.continue();
             } else {
-                // Find and display duplicates
+                // Process records for duplicates
                 const duplicates = findDuplicates(records);
                 if (duplicates.length > 0) {
                     console.log("Duplicate records found:", duplicates);
@@ -58,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Group records by Mobile_Number
         records.forEach((record) => {
-            const mobileNumber = record.Mobile_Number || "N/A";
+            const mobileNumber = record.Mobile_Number;
             if (!grouped[mobileNumber]) {
                 grouped[mobileNumber] = [];
             }
