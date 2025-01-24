@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = JSON.parse(rawData);
 
                 // Send the data to Power Automate
-                const response = await fetch(powerAutomateUrl, {
+                fetch(powerAutomateUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
