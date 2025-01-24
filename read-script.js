@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
     const dbName = "initDB";
-    const storeName = "user_store_data";
-
-    const mobileNumberField = document.getElementById("mobileNumber");
-    const emailField = document.getElementById("email");
-    const nameField = document.getElementById("name");
+    const storeName = "user_data_store";
     const tableBody = document.querySelector("#data-table tbody");
+    const mobileNumberField = document.getElementById("mobileNumber");
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
 
-    if (!mobileNumberField || !emailField || !nameField || !tableBody) {
+    if (!tableBody || !mobileNumberField || !nameField || !emailField) {
         console.error("HTML elements with required IDs are missing.");
         return;
     }
@@ -17,14 +16,48 @@ document.addEventListener("DOMContentLoaded", () => {
     request.onsuccess = function (event) {
         const db = event.target.result;
         console.log("Database opened successfully.");
-        loadDuplicateRecords(db);
+        loadRecordsWithSameMobileNumber(db);
     };
 
     request.onerror = function (event) {
         console.error("Error opening IndexedDB:", event.target.error);
     };
 
-    function loadDuplicateRecords(db) {
+    function loadRecordsWithSameMobileNumber(db) {
+        const transaction = db.transaction(storeName, "readwrite"); // Open transaction in readwrite mode
+        const store = transaction.objectStore(storeName);
+
+        let referenceMobileNumber = null; // Placeholder for the mobile number to filter
+
+        // Fetch the first record with Status: "Not Done"
+        store.openCursor().onsuccess = function (event) {
+            const cursor = event.target.result;
+
+            if (cursor) {
+                if (cursor.value.Status === "Not Done") {
+                    referenceMobileNumber = cursor.value.Mobile_Number; // Set reference mobile number
+                    cursor.value.Status = "Working"; // Update the Status field
+                    cursor.update(cursor.value); // Save the updated record back to IndexedDB
+
+                    console.log(`Status updated to "Working" for Mobile Number: ${referenceMobileNumber}`);
+
+                    populateBasicInfo(cursor.value); // Populate basic info for the selected record
+                    fetchAllMatchingRecords(referenceMobileNumber, db); // Fetch all matching records
+                    return; // Stop further cursor iteration
+                }
+                cursor.continue();
+            } else {
+                console.warn("No records found with Status: Not Done.");
+                tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
+            }
+        };
+
+        store.openCursor().onerror = function (event) {
+            console.error("Error querying IndexedDB for reference mobile number:", event.target.error);
+        };
+    }
+
+    function fetchAllMatchingRecords(mobileNumber, db) {
         const transaction = db.transaction(storeName, "readonly");
         const store = transaction.objectStore(storeName);
         const records = [];
@@ -33,56 +66,35 @@ document.addEventListener("DOMContentLoaded", () => {
             const cursor = event.target.result;
 
             if (cursor) {
-                // Ensure Mobile_Number exists and is valid
-                const mobileNumber = cursor.value.Mobile_Number || "N/A";
-                if (mobileNumber !== "N/A") {
+                if (cursor.value.Mobile_Number === mobileNumber) {
                     records.push(cursor.value);
                 }
                 cursor.continue();
             } else {
-                // Process records for duplicates
-                const duplicates = findDuplicates(records);
-                if (duplicates.length > 0) {
-                    console.log("Duplicate records found:", duplicates);
-                    populateTable(duplicates);
+                if (records.length > 0) {
+                    console.log("Matching records found:", records); // Debugging
+                    populateTable(records);
                 } else {
-                    console.warn("No duplicate records found.");
-                    tableBody.innerHTML = `<tr><td colspan="8">No duplicate records found</td></tr>`;
+                    console.warn("No records found for Mobile Number:", mobileNumber);
+                    tableBody.innerHTML = `<tr><td colspan="8">No records found</td></tr>`;
                 }
             }
         };
 
         store.openCursor().onerror = function (event) {
-            console.error("Error querying IndexedDB:", event.target.error);
+            console.error("Error querying IndexedDB for matching records:", event.target.error);
         };
     }
 
-    function findDuplicates(records) {
-        const grouped = {};
-
-        // Group records by Mobile_Number
-        records.forEach((record) => {
-            const mobileNumber = record.Mobile_Number;
-            if (!grouped[mobileNumber]) {
-                grouped[mobileNumber] = [];
-            }
-            grouped[mobileNumber].push(record);
-        });
-
-        // Filter groups where there are more than one record
-        const duplicates = [];
-        for (const mobileNumber in grouped) {
-            if (grouped[mobileNumber].length > 1) {
-                duplicates.push(...grouped[mobileNumber]);
-            }
-        }
-
-        return duplicates;
+    function populateBasicInfo(record) {
+        mobileNumberField.textContent = record.Mobile_Number || "N/A";
+        nameField.textContent = record.Name || "N/A";
+        emailField.textContent = record.Email || "N/A";
     }
 
     function populateTable(records) {
         tableBody.innerHTML = ""; // Clear previous rows
-        records.forEach((record) => {
+        records.forEach((record, index) => {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${record["Sr_No"] || "N/A"}</td>
@@ -91,6 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${record["Area"] || "N/A"}</td>
                 <td>${record["City"] || "N/A"}</td>
                 <td>${record["State"] || "N/A"}</td>
+                <td>${record["Requirement Mentioned"] || "N/A"}</td>
+                <td>${record["Search Time"] || "N/A"}</td>
                 <td>${record["Requirement Mentioned"] || "N/A"}</td>
                 <td>${record["Search Time"] || "N/A"}</td>
             `;
