@@ -90,7 +90,12 @@ record.Call_Back_Time = currentTime.toLocaleString();
             console.error("Error opening IndexedDB:", event.target.error);
         };
     }
-
+// Function to simulate saving data to Data.json (in-browser only)
+function saveToJsonFile(data) {
+    localStorage.setItem("Data.json", JSON.stringify(data, null, 2)); // Save to localStorage
+    console.log("Data.json updated in localStorage.");
+    alert("Data.json has been successfully updated.");
+}
     
 
     // Add event listener to a button to trigger the update
