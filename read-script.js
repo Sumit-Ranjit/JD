@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function loadRecordsWithSameMobileNumber(db) {
-        const transaction = db.transaction(storeName, "readwrite"); // Open transaction in readwrite mode
+        const transaction = db.transaction( "user_data_store", "readwrite"); // Open transaction in readwrite mode
         const store = transaction.objectStore(storeName);
 
         let referenceMobileNumber = null; // Placeholder for the mobile number to filter
