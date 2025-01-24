@@ -29,7 +29,7 @@ window.onload = function() {
     console.log("All browser storage data except login information has been deleted.");
 
 
-};
+
 
 // reset-initdb.js
 
@@ -78,4 +78,5 @@ deleteRequest.onsuccess = function() {
 
 deleteRequest.onerror = function() {
   console.log('Error deleting the database.');
+};
 };
